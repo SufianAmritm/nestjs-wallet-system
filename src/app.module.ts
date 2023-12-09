@@ -12,7 +12,7 @@ import { CoinTransactionModule } from './modules/coinTransaction/coinTransaction
 import { WalletTransactionModule } from './modules/walletTransaction/walletTransaction.module';
 import { CoinsModule } from './modules/coins/coins.module';
 import { WalletModule } from './modules/wallet/wallet.module';
-import { UserInfoModule } from './modules/user/user.module';
+import { UserModule } from './modules/user/user.module';
 import { CountryModule } from './modules/country/country.module';
 import { CityModule } from './modules/city/city.module';
 import { Module } from '@nestjs/common';
@@ -49,7 +49,7 @@ import { RequestLoggerInterceptor } from './common/loggerInterceptor';
     WalletTransactionModule,
     CoinsModule,
     WalletModule,
-    UserInfoModule,
+    UserModule,
     CountryModule,
     CityModule,
   ],

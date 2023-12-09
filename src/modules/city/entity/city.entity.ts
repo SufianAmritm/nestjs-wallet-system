@@ -6,8 +6,11 @@ import { User } from 'src/modules/user/entity/user.entity';
 export class City extends BaseEntity {
   @Column('character varying', { name: 'name', nullable: false })
   name: string;
+  @Column('integer', { name: 'country_id', nullable: false })
+  countryId: number;
+
   @ManyToOne(() => Country, (country) => country.city)
-  @JoinColumn({ name: 'county_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'country_id', referencedColumnName: 'id' })
   country: Country;
   @OneToMany(() => User, (user) => user.city)
   user: User[];

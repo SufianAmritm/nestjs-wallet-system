@@ -2,7 +2,57 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { UserDto } from './dto/user.dto';
+import { UserService } from './user.service';
+import { User } from './entity/user.entity';
+import { DeleteResult } from 'typeorm';
+import { UserUpdateDto } from './dto/userUpdate.dto';
+import { UserSearchDto } from './dto/userSearch.dto';
 
-@Controller()
-export class UserController {}
+@Controller('user')
+export class UserController {
+  constructor(@Inject(UserService) private readonly userService: UserService) {}
+  @Get()
+  async findAllCities(): Promise<User[]> {
+    return await this.userService.findAllCities();
+  }
+  @Post()
+  async postUser(@Body() body: UserDto): Promise<any> {
+    return await this.userService.postUser(body);
+  }
+  @Get('search')
+  async findUserByPattern(@Query() query: {}): Promise<User[] | string> {
+    return await this.userService.findUserRelationsAndSearch(query);
+  }
+  @Get(':id')
+  async findOneUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<User[] | void> {
+    return await this.userService.findOneUser(id);
+  }
+  @Patch(':id')
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UserUpdateDto,
+  ) {
+    return await this.userService.updateUser(id, body);
+  }
+  @Delete(':id')
+  async deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<DeleteResult> {
+    return await this.userService.deleteUser(id);
+  }
+}
