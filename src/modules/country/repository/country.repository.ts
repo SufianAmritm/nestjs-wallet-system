@@ -35,10 +35,15 @@ export class CountryRepository
 
     if (id || name || currency) {
       const whereOption: Partial<Record<string, any>> = {};
+
+      for (const i in pattern) {
+        if (i !== keyword) {
+          whereOption[i] = pattern[i];
+        }
+      }
+
       const relationOption: Record<string, any> = {};
-      if (id) whereOption.id = id;
-      if (name) whereOption.name = name;
-      if (currency) whereOption.currency = currency;
+
       if (city === true) {
         relationOption.city = true;
       }
