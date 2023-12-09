@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DeleteResult, Repository } from 'typeorm';
 
 import { UserSearchDto } from '../dto/userSearch.dto';
+import { Wallet } from 'src/modules/wallet/entity/wallet.entity';
 
 @Injectable()
 export class UserRepository
@@ -18,7 +19,15 @@ export class UserRepository
   ) {
     super(repository);
   }
-  async findUserRelationsAndSearch(pattern: UserSearchDto): Promise<User[]> {
+  async findUserRelationsAndSearch(
+    pattern: UserSearchDto,
+    wallet: boolean,
+  ): Promise<User[] | Wallet[]> {
+    if (wallet) {
+      return (
+        await this.repository.find({ relations: { wallet: true } })
+      ).flatMap((user) => user.wallet);
+    }
     const { id, name, cityId, keyword } = pattern;
 
     if (id || name || cityId) {

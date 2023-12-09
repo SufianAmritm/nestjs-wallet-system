@@ -20,6 +20,7 @@ import { City } from './entity/city.entity';
 import { DeleteResult } from 'typeorm';
 import { CityUpdateDto } from './dto/cityUpdate.dto';
 import { CitySearchDto } from './dto/citySearch.dto';
+import { User } from '../user/entity/user.entity';
 
 @Controller('city')
 export class CityController {
@@ -33,8 +34,10 @@ export class CityController {
     return await this.cityService.postCity(body);
   }
   @Get('search')
-  async findCityRelationsAndSearch(@Query() query: {}): Promise<City[] | void> {
-    return await this.cityService.findCityRelationsAndSearch(query);
+  async findCityRelationsAndSearch(
+    @Query() query: {},
+  ): Promise<City[] | User[]> {
+    return await this.cityService.findCityRelationsAndSearch(query, false);
   }
   @Get(':id')
   async findOneCity(

@@ -13,12 +13,13 @@ import { CountrySearchDto } from './dto/countrySearch.dto';
 import { City } from '../city/entity/city.entity';
 import { ICountryService } from './interface/countryService.interface';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
+import { ICityService } from '../city/interface/cityService.interface';
 
 @Injectable()
 export class CountryService implements ICountryService {
   constructor(
     @Inject(ICountryRepository) private readonly repository: ICountryRepository,
+    @Inject(ICityService) private readonly cityService: ICityService,
   ) {}
   public readonly tableName: string = this.repository.tableName;
   async postCountry(body: CountryDto): Promise<Country | void> {
@@ -54,6 +55,15 @@ export class CountryService implements ICountryService {
     return await this.repository.updateByIdWithTransaction(id, data, Country);
   }
   async deleteCountry(id: number): Promise<DeleteResult> {
+    const cityIds = (
+      await this.repository.findCountryRelationsAndSearch({}, true)
+    ).flatMap((city) => city.id);
+    if (cityIds.length > 0) {
+      cityIds.forEach(async (cityId) => {
+        await this.cityService.deleteCityByCountryId(Number(cityId));
+      });
+    }
+
     return await this.repository.deleteCountry(id);
   }
 
@@ -61,8 +71,6 @@ export class CountryService implements ICountryService {
     pattern: CountrySearchDto,
     findCity: boolean,
   ): Promise<Country[] | City[] | void> {
-    validPattern<CountrySearchDto>(pattern, this.tableName);
-
     const result = await this.repository.findCountryRelationsAndSearch(
       pattern,
       findCity,

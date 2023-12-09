@@ -3,7 +3,13 @@ import { Country } from '../entity/country.entity';
 import { BaseRepository } from 'src/common/database/rep/base.repository';
 import { ICountryRepository } from '../interface/countryRepo.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DeleteResult, Repository } from 'typeorm';
+import {
+  Brackets,
+  DeleteResult,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 import { CountrySearchDto } from '../dto/countrySearch.dto';
 import { City } from 'src/modules/city/entity/city.entity';
@@ -31,10 +37,16 @@ export class CountryRepository
     pattern: CountrySearchDto,
     city: boolean,
   ): Promise<Country[] | City[]> {
+    if (city) {
+      return (
+        await this.repository.find({ relations: { city: true } })
+      ).flatMap((country) => country.city);
+    }
+
     const { id, name, currency, keyword } = pattern;
 
     if (id || name || currency) {
-      const whereOption: Partial<Record<string, any>> = {};
+      const whereOption: FindOptionsWhere<Country> = {};
 
       for (const i in pattern) {
         if (i !== keyword) {
@@ -42,18 +54,10 @@ export class CountryRepository
         }
       }
 
-      const relationOption: Record<string, any> = {};
-
-      if (city === true) {
-        relationOption.city = true;
-      }
       const result: Country[] = await this.repository.find({
         where: whereOption,
-        relations: relationOption,
       });
-      if (city === true) {
-        return result.flatMap((item) => item.city);
-      } else return result;
+      return result;
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;

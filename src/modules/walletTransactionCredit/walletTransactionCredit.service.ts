@@ -11,7 +11,6 @@ import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { WalletTransactionCreditUpdateDto } from './dto/walletTransactionCreditUpdate.dto';
 import { WalletTransactionCreditSearchDto } from './dto/walletTransactionCreditSearch.dto';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
 import { IWalletTransactionService } from '../walletTransaction/interface/walletTransactionService.interface';
 import { WalletTransaction } from '../walletTransaction/entity/walletTransaction.entity';
 import { validCredit } from 'src/utils/valid/credit.valid';
@@ -116,8 +115,6 @@ export class WalletTransactionCreditService {
   async findWalletRelationsAndSearch(
     pattern: WalletTransactionCreditSearchDto,
   ): Promise<WalletTransactionCredit[] | void> {
-    validPattern<WalletTransactionCreditSearchDto>(pattern, this.tableName);
-
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
     console.log(result);
     return validResult<WalletTransactionCredit[]>(result, this.tableName);
