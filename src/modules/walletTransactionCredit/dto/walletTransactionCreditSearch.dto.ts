@@ -10,6 +10,10 @@ export class WalletTransactionCreditSearchDto {
   @IsNumber()
   @IsNotEmpty()
   @IsOptional()
+  amount?: number;
+  @IsNumber()
+  @IsNotEmpty()
+  @IsOptional()
   id?: number;
   @IsBoolean()
   @IsNotEmpty()
@@ -42,7 +46,10 @@ export class WalletTransactionCreditSearchDto {
   @IsBoolean()
   @IsNotEmpty()
   @IsOptional()
-  IBillTopUp?: boolean;
+  iBillTopUp?: boolean;
+  @IsBoolean()
+  @IsNotEmpty()
+  gift: boolean;
   @IsNumber()
   @IsNotEmpty()
   @IsOptional()

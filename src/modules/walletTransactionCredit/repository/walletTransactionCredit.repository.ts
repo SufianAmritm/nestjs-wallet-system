@@ -29,9 +29,10 @@ export class WalletTransactionCreditRepository
       cashPaidToDeliveryAgent,
       unfullfillment,
       partialAcceptance,
-      IBillTopUp,
+      iBillTopUp,
       transactionId,
       id,
+      amount,
       keyword,
     } = pattern;
 
@@ -44,9 +45,9 @@ export class WalletTransactionCreditRepository
       cashPaidToDeliveryAgent ||
       unfullfillment ||
       partialAcceptance ||
-      IBillTopUp ||
+      iBillTopUp ||
       transactionId ||
-      keyword
+      amount
     ) {
       const whereOption: Partial<Record<string, any>> = {};
 
@@ -61,7 +62,6 @@ export class WalletTransactionCreditRepository
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;
-    console.log(keyPattern);
     if (keyword) {
       return await this.repository
         .createQueryBuilder(alias)
@@ -74,9 +74,7 @@ export class WalletTransactionCreditRepository
               .orWhere(`CAST (${alias}.amount as text) ILIKE :keyPattern`, {
                 keyPattern,
               })
-              .orWhere(`CAST(${alias}.walletId as text) ILIKE :keyPattern`, {
-                keyPattern,
-              })
+
               .orWhere(
                 `CAST(${alias}.coinConversion as text) ILIKE :keyPattern`,
                 {
@@ -104,7 +102,7 @@ export class WalletTransactionCreditRepository
                   keyPattern,
                 },
               )
-              .orWhere(`CAST(${alias}.IBillTopUp as text) ILIKE :keyPattern`, {
+              .orWhere(`CAST(${alias}.iBillTopUp as text) ILIKE :keyPattern`, {
                 keyPattern,
               })
               .orWhere(
@@ -112,7 +110,13 @@ export class WalletTransactionCreditRepository
                 {
                   keyPattern,
                 },
-              ),
+              )
+              .orWhere(`CAST(${alias}.freeCredit as text) ILIKE :keyPattern`, {
+                keyPattern,
+              })
+              .orWhere(`CAST(${alias}.paidCredit as text) ILIKE :keyPattern`, {
+                keyPattern,
+              }),
           ),
         )
         .getMany();

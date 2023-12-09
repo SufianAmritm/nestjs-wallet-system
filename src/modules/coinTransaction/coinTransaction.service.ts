@@ -13,8 +13,9 @@ import { CoinTransactionUpdateDto } from './dto/coinTransactionUpdate.dto';
 import { CoinTransactionSearchDto } from './dto/coinTransactionSearch.dto';
 import { Coins } from '../coins/entity/coins.entity';
 import { ICoinsService } from '../coins/interface/coinsService.interface';
-import { resultValid } from 'src/utils/valid/result.valid';
-import { patternValid } from 'src/utils/valid/pattern.valid';
+import { validResult } from 'src/utils/valid/result.valid';
+import { validPattern } from 'src/utils/valid/pattern.valid';
+import { validateCoinTransaction } from 'src/utils/valid/coinTransaction.valid';
 
 @Injectable()
 export class CoinTransactionService {
@@ -28,14 +29,8 @@ export class CoinTransactionService {
   async postCoinTransaction(
     body: CoinTransactionDto,
   ): Promise<CoinTransaction | void> {
-    const { credit, debit, coinsId, amount } = body;
-
-    if (
-      (debit === true && credit === true) ||
-      (debit === false && credit === false)
-    ) {
-      throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
-    }
+    const { credit, debit, coinsId, creditAmount, debitAmount } = body;
+    validateCoinTransaction(body);
     const coins: Coins[] | void = await this.coinsService.findOneCoins(coinsId);
     let coinData: Coins;
     if (Array.isArray(coins) && coins.length > 0) {
@@ -43,13 +38,13 @@ export class CoinTransactionService {
     }
     const { amount: openingCoinsAmount } = coinData;
     delete coinData.id;
-    if (credit) {
-      coinData.amount = coinData.amount + amount;
+    if (credit && creditAmount) {
+      coinData.amount = coinData.amount + creditAmount;
 
       await this.coinsService.updateCoinsWithTransaction(coinsId, coinData);
     }
-    if (debit) {
-      coinData.amount = coinData.amount - amount;
+    if (debit && debitAmount) {
+      coinData.amount = coinData.amount - debitAmount;
       await this.coinsService.updateCoinsWithTransaction(coinsId, coinData);
     }
     const data: CoinTransaction = plainToClass(CoinTransaction, body);
@@ -61,14 +56,8 @@ export class CoinTransactionService {
   async postCoinTransactionWithTransaction(
     body: CoinTransactionDto,
   ): Promise<CoinTransaction> {
-    const { credit, debit, coinsId, amount } = body;
-
-    if (
-      (debit === true && credit === true) ||
-      (debit === false && credit === false)
-    ) {
-      throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
-    }
+    const { credit, debit, coinsId, creditAmount, debitAmount } = body;
+    validateCoinTransaction(body);
 
     const coins: Coins[] | void = await this.coinsService.findOneCoins(coinsId);
     let coinData: Coins;
@@ -77,12 +66,12 @@ export class CoinTransactionService {
     }
     const { amount: openingCoinsAmount } = coinData;
     delete coinData.id;
-    if (credit) {
-      coinData.amount = openingCoinsAmount + amount;
+    if (credit && creditAmount) {
+      coinData.amount = openingCoinsAmount + creditAmount;
       await this.coinsService.updateCoinsWithTransaction(coinsId, coinData);
     }
-    if (debit) {
-      coinData.amount = coinData.amount - amount;
+    if (debit && debitAmount) {
+      coinData.amount = coinData.amount - debitAmount;
       await this.coinsService.updateCoinsWithTransaction(coinsId, coinData);
     }
 
@@ -100,7 +89,7 @@ export class CoinTransactionService {
     const result: CoinTransaction[] =
       await this.repository.findById(findOption);
 
-    return resultValid<CoinTransaction[]>(result, this.tableName);
+    return validResult<CoinTransaction[]>(result, this.tableName);
   }
   async updateCoinTransaction(
     id: number,
@@ -127,10 +116,10 @@ export class CoinTransactionService {
   async findCoinsRelationsAndSearch(
     pattern: CoinTransactionSearchDto,
   ): Promise<CoinTransaction[] | void> {
-    patternValid<CoinTransactionSearchDto>(pattern, this.tableName);
+    validPattern<CoinTransactionSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findCoinsRelationsAndSearch(pattern);
 
-    return resultValid<CoinTransaction[]>(result, this.tableName);
+    return validResult<CoinTransaction[]>(result, this.tableName);
   }
 }

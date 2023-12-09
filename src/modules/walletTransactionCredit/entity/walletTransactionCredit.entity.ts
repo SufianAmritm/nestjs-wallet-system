@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/database/entity/base.entity';
 import { WalletTransaction } from 'src/modules/walletTransaction/entity/walletTransaction.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity('wallet_transaction_credit', { schema: 'wallet' })
 export class WalletTransactionCredit extends BaseEntity {
@@ -26,7 +26,11 @@ export class WalletTransactionCredit extends BaseEntity {
     default: false,
   })
   cashPaidToDeliveryAgent: boolean;
-  @Column('boolean', { name: 'unfulfillment', nullable: false, default: false })
+  @Column('boolean', {
+    name: 'unfullfillment',
+    nullable: false,
+    default: false,
+  })
   unfullfillment: boolean;
   @Column('boolean', {
     name: 'partial_acceptance',
@@ -34,11 +38,14 @@ export class WalletTransactionCredit extends BaseEntity {
     default: false,
   })
   partialAcceptance: boolean;
-  @Column('boolean', { name: 'ibill_topup', nullable: false, default: false })
+  @Column('boolean', { name: 'ibill_top_up', nullable: false, default: false })
   iBillTopUp: boolean;
   @Column('integer', { name: 'transaction_id', nullable: false })
   transactionId: number;
-  @OneToOne(() => WalletTransaction)
+  @ManyToOne(
+    () => WalletTransaction,
+    (walletTransaction) => walletTransaction.walletTransactionCredit,
+  )
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;
 }

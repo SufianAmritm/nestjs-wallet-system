@@ -8,19 +8,17 @@ import { CityDto } from './dto/city.dto';
 import { City } from './entity/city.entity';
 import { plainToClass } from 'class-transformer';
 import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
-import { MESSAGE } from 'src/common/customMessages';
 import { CityUpdateDto } from './dto/cityUpdate.dto';
 import { CitySearchDto } from './dto/citySearch.dto';
-// import { ICountryService } from '../country/interface/countryService.interface';
+
 import { ICityService } from './interface/cityService.interface';
-import { resultValid } from 'src/utils/valid/result.valid';
-import { patternValid } from 'src/utils/valid/pattern.valid';
+import { validResult } from 'src/utils/valid/result.valid';
+import { validPattern } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class CityService implements ICityService {
   constructor(
     @Inject(ICityRepository) private readonly repository: ICityRepository,
-    // @Inject(ICountryService) private readonly countryService: ICountryService,
   ) {}
   public readonly tableName: string = this.repository.tableName;
   async postCity(body: CityDto): Promise<City | void> {
@@ -40,7 +38,7 @@ export class CityService implements ICityService {
   async findOneCity(id: number): Promise<City[] | void> {
     const findOption: FindOptionsWhere<City> = { id: id };
     const result: City[] = await this.repository.findById(findOption);
-    return resultValid<City[]>(result, this.tableName);
+    return validResult<City[]>(result, this.tableName);
   }
   async updateCity(id: number, body: CityUpdateDto): Promise<UpdateResult> {
     const data: City = plainToClass(City, body);
@@ -60,9 +58,9 @@ export class CityService implements ICityService {
   async findCityRelationsAndSearch(
     pattern: CitySearchDto,
   ): Promise<City[] | void> {
-    patternValid<CitySearchDto>(pattern, this.tableName);
+    validPattern<CitySearchDto>(pattern, this.tableName);
     const result = await this.repository.findCityRelationsAndSearch(pattern);
     console.log(result);
-    return resultValid<City[]>(result, this.tableName);
+    return validResult<City[]>(result, this.tableName);
   }
 }

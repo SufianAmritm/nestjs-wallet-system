@@ -13,8 +13,9 @@ import { WalletTransactionUpdateDto } from './dto/walletTransactionUpdate.dto';
 import { WalletTransactionSearchDto } from './dto/walletTransactionSearch.dto';
 import { Wallet } from '../wallet/entity/wallet.entity';
 import { IWalletService } from '../wallet/interface/walletService.interface';
-import { resultValid } from 'src/utils/valid/result.valid';
-import { patternValid } from 'src/utils/valid/pattern.valid';
+import { validResult } from 'src/utils/valid/result.valid';
+import { validPattern } from 'src/utils/valid/pattern.valid';
+import { validateWalletTransaction } from 'src/utils/valid/walletTransaction.valid';
 
 @Injectable()
 export class WalletTransactionService {
@@ -28,14 +29,9 @@ export class WalletTransactionService {
   async postWalletTransaction(
     body: WalletTransactionDto,
   ): Promise<WalletTransaction | void> {
-    const { credit, debit, walletId, amount } = body;
+    const { credit, debit, walletId, creditAmount, debitAmount } = body;
 
-    if (
-      (debit === true && credit === true) ||
-      (debit === false && credit === false)
-    ) {
-      throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
-    }
+    validateWalletTransaction(body);
     const wallet: Wallet[] | void =
       await this.walletService.findOneWallet(walletId);
     let walletData: Wallet;
@@ -44,16 +40,16 @@ export class WalletTransactionService {
     }
     const { balance: openingWalletBalance } = walletData;
     delete walletData.id;
-    if (credit) {
-      walletData.balance = walletData.balance + amount;
+    if (credit && creditAmount) {
+      walletData.balance = walletData.balance + creditAmount;
 
       await this.walletService.updateWalletWithTransaction(
         walletId,
         walletData,
       );
     }
-    if (debit) {
-      walletData.balance = walletData.balance - amount;
+    if (debit && debitAmount) {
+      walletData.balance = walletData.balance - debitAmount;
       await this.walletService.updateWalletWithTransaction(
         walletId,
         walletData,
@@ -68,14 +64,9 @@ export class WalletTransactionService {
   async postWalletTransactionWithTransaction(
     body: WalletTransactionDto,
   ): Promise<WalletTransaction> {
-    const { credit, debit, walletId, amount } = body;
+    const { credit, debit, walletId, creditAmount, debitAmount } = body;
 
-    if (
-      (debit === true && credit === true) ||
-      (debit === false && credit === false)
-    ) {
-      throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
-    }
+    validateWalletTransaction(body);
 
     const wallet: Wallet[] | void =
       await this.walletService.findOneWallet(walletId);
@@ -85,15 +76,15 @@ export class WalletTransactionService {
     }
     const { balance: openingWalletBalance } = walletData;
     delete walletData.id;
-    if (credit) {
-      walletData.balance = openingWalletBalance + amount;
+    if (credit && creditAmount) {
+      walletData.balance = openingWalletBalance + creditAmount;
       await this.walletService.updateWalletWithTransaction(
         walletId,
         walletData,
       );
     }
-    if (debit) {
-      walletData.balance = walletData.balance - amount;
+    if (debit && debitAmount) {
+      walletData.balance = walletData.balance - debitAmount;
       await this.walletService.updateWalletWithTransaction(
         walletId,
         walletData,
@@ -116,7 +107,7 @@ export class WalletTransactionService {
     const result: WalletTransaction[] =
       await this.repository.findById(findOption);
 
-    return resultValid<WalletTransaction[]>(result, this.tableName);
+    return validResult<WalletTransaction[]>(result, this.tableName);
   }
   async updateWalletTransaction(
     id: number,
@@ -143,10 +134,10 @@ export class WalletTransactionService {
   async findWalletRelationsAndSearch(
     pattern: WalletTransactionSearchDto,
   ): Promise<WalletTransaction[] | void> {
-    patternValid<WalletTransactionSearchDto>(pattern, this.tableName);
+    validPattern<WalletTransactionSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
     console.log(result);
-    return resultValid<WalletTransaction[]>(result, this.tableName);
+    return validResult<WalletTransaction[]>(result, this.tableName);
   }
 }

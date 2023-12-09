@@ -1,4 +1,4 @@
-import { TransactionReasonModule } from './modules/WalletTransactionReason/WalletTransactionReason.module';
+import { TransactionReasonModule } from './modules/WalletTransactionReason/walletTransactionReason.module';
 
 import { WalletTransactionDebitModule } from './modules/walletTransactionDebit/walletTransactionDebit.module';
 

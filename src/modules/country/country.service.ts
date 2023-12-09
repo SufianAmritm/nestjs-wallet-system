@@ -7,19 +7,13 @@ import { ICountryRepository } from './interface/countryRepo.interface';
 import { CountryDto } from './dto/country.dto';
 import { Country } from './entity/country.entity';
 import { plainToClass } from 'class-transformer';
-import {
-  DeleteResult,
-  EntityManager,
-  FindOptionsWhere,
-  UpdateResult,
-} from 'typeorm';
-import { MESSAGE } from 'src/common/customMessages';
+import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { CountryUpdateDto } from './dto/countryUpdate.dto';
 import { CountrySearchDto } from './dto/countrySearch.dto';
 import { City } from '../city/entity/city.entity';
 import { ICountryService } from './interface/countryService.interface';
-import { resultValid } from 'src/utils/valid/result.valid';
-import { patternValid } from 'src/utils/valid/pattern.valid';
+import { validResult } from 'src/utils/valid/result.valid';
+import { validPattern } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class CountryService implements ICountryService {
@@ -42,7 +36,7 @@ export class CountryService implements ICountryService {
   async findOneCountry(id: number): Promise<Country[] | void> {
     const findOption: FindOptionsWhere<Country> = { id: id };
     const result: Country[] = await this.repository.findById(findOption);
-    return resultValid<Country[]>(result, this.tableName);
+    return validResult<Country[]>(result, this.tableName);
   }
   async updateCountry(
     id: number,
@@ -67,12 +61,12 @@ export class CountryService implements ICountryService {
     pattern: CountrySearchDto,
     findCity: boolean,
   ): Promise<Country[] | City[] | void> {
-    patternValid<CountrySearchDto>(pattern, this.tableName);
+    validPattern<CountrySearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findCountryRelationsAndSearch(
       pattern,
       findCity,
     );
-    return resultValid<Country[] | City[]>(result, this.tableName);
+    return validResult<Country[] | City[]>(result, this.tableName);
   }
 }

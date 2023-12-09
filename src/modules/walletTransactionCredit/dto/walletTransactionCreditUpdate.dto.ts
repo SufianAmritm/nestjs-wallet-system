@@ -39,6 +39,9 @@ export class WalletTransactionCreditUpdateDto {
   @IsNotEmpty()
   @IsOptional()
   IBillTopUp?: boolean;
+  @IsBoolean()
+  @IsNotEmpty()
+  gift: boolean;
   @IsNumber()
   @IsNotEmpty()
   @IsOptional()
