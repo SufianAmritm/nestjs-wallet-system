@@ -7,6 +7,8 @@ import { Column, Entity, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 export class Coins extends BaseEntity {
   @Column('integer', { name: 'amount', nullable: false, default: 0 })
   amount: number;
+  @Column('integer', { name: 'user_id', nullable: false })
+  userId: number;
   @OneToOne(() => User)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;

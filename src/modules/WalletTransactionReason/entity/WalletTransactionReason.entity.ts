@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/database/entity/base.entity';
-import { WalletTransaction } from 'src/modules/walletTransaction/entity/walletTransaction';
+import { WalletTransaction } from 'src/modules/walletTransaction/entity/walletTransaction.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity('transaction_reason', { schema: 'wallet' })

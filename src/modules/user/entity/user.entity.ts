@@ -8,6 +8,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 export class User extends BaseEntity {
   @Column('character varying', { name: 'name', nullable: false })
   name: string;
+  @Column('integer', { name: 'city_id', nullable: false })
+  cityId: number;
   @ManyToOne(() => City, (city) => city.user)
   @JoinColumn({ name: 'city_id', referencedColumnName: 'id' })
   city: City;

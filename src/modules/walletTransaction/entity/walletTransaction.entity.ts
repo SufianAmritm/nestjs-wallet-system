@@ -5,7 +5,7 @@ import { WalletTransactionCredit } from 'src/modules/walletTransactionCredit/ent
 import { WalletTransactionDebit } from 'src/modules/walletTransactionDebit/entity/walletTransactionDebit.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
-@Entity('wallet_Transaction', { schema: 'wallet' })
+@Entity('wallet_transactions', { schema: 'wallet' })
 export class WalletTransaction extends BaseEntity {
   @Column('integer', {
     name: 'amount',
@@ -29,6 +29,8 @@ export class WalletTransaction extends BaseEntity {
     default: 0,
   })
   closingWalletBalance: number;
+  @Column('integer', { name: 'wallet_id', nullable: false })
+  walletId: number;
   @ManyToOne(() => Wallet, (wallet) => wallet.walletTransaction)
   @JoinColumn({ name: 'wallet_id', referencedColumnName: 'id' })
   wallet: Wallet;

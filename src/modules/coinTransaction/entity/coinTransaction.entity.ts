@@ -4,7 +4,7 @@ import { CoinTransactionDebit } from 'src/modules/coinTransactionDebit/entity/co
 import { Coins } from 'src/modules/coins/entity/coins.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
-@Entity('coin_transaction', { schema: 'wallet' })
+@Entity('coin_transactions', { schema: 'wallet' })
 export class CoinTransaction extends BaseEntity {
   @Column('integer', {
     name: 'amount',
@@ -17,17 +17,19 @@ export class CoinTransaction extends BaseEntity {
   @Column('boolean', { name: 'debit', nullable: false })
   debit: boolean;
   @Column('integer', {
-    name: 'opening_coins_balance',
+    name: 'opening_coins_amount',
     nullable: false,
     default: 0,
   })
-  openingCoinsBalance: number;
+  openingCoinsAmount: number;
   @Column('integer', {
-    name: 'closing_coins_balance',
+    name: 'closing_coins_amount',
     nullable: false,
     default: 0,
   })
-  closingCoinsBalance: number;
+  closingCoinsAmount: number;
+  @Column('integer', { name: 'coins_id', nullable: false })
+  coinsId: number;
   @ManyToOne(() => Coins, (coins) => coins.coinTransaction)
   @JoinColumn({ name: 'coins_id', referencedColumnName: 'id' })
   coins: Coins[];
