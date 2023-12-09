@@ -37,7 +37,7 @@ export class WalletController {
   @Get('search')
   async findWalletByPattern(
     @Query() query: WalletSearchDto,
-  ): Promise<Wallet[] | string> {
+  ): Promise<Wallet[] | void> {
     return await this.walletService.findWalletRelationsAndSearch(query);
   }
   @Get(':id')

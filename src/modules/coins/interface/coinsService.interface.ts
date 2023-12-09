@@ -4,7 +4,7 @@ import { Coins } from '../entity/coins.entity';
 export const ICoinsService = Symbol('ICoinsService');
 
 export interface ICoinsService {
-  findOneCoins(id: number): Promise<Coins[]>;
+  findOneCoins(id: number): Promise<Coins[] | void>;
 
   updateCoinsWithTransaction(
     id: number,

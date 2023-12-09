@@ -12,13 +12,15 @@ import { MESSAGE } from 'src/common/customMessages';
 import { WalletUpdateDto } from './dto/walletUpdate.dto';
 import { WalletSearchDto } from './dto/walletSearch.dto';
 import { IWalletService } from './interface/walletService.interface';
+import { resultValid } from 'src/utils/valid/result.valid';
+import { patternValid } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class WalletService implements IWalletService {
   constructor(
     @Inject(IWalletRepository) private readonly repository: IWalletRepository,
   ) {}
-
+  public readonly tableName: string = this.repository.tableName;
   async postWallet(body: WalletDto): Promise<Wallet | void> {
     const data: Wallet = plainToClass(Wallet, body);
     return await this.repository.postData(data);
@@ -31,14 +33,10 @@ export class WalletService implements IWalletService {
   async findAllWallets(): Promise<Wallet[]> {
     return await this.repository.findAll();
   }
-  async findOneWallet(id: number): Promise<Wallet[]> {
+  async findOneWallet(id: number): Promise<Wallet[] | void> {
     const findOption: FindOptionsWhere<Wallet> = { id: id };
     const result: Wallet[] = await this.repository.findById(findOption);
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<Wallet[]>(result, this.tableName);
   }
   async updateWallet(id: number, body: WalletUpdateDto): Promise<UpdateResult> {
     const data: Wallet = plainToClass(Wallet, body);
@@ -57,18 +55,10 @@ export class WalletService implements IWalletService {
   }
   async findWalletRelationsAndSearch(
     pattern: WalletSearchDto,
-  ): Promise<Wallet[] | string> {
-    if (Object.keys(pattern).length === 0) {
-      throw new Error(
-        `${MESSAGE.EMPTY_SEARCH_QUERY} in ${this.repository.tableName}`,
-      );
-    }
+  ): Promise<Wallet[] | void> {
+    patternValid<WalletSearchDto>(pattern, this.tableName);
+
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
-    console.log(result);
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<Wallet[]>(result, this.tableName);
   }
 }

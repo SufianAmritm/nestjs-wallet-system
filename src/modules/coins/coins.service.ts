@@ -11,6 +11,7 @@ import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { MESSAGE } from 'src/common/customMessages';
 import { CoinsUpdateDto } from './dto/coinsUpdate.dto';
 import { CoinsSearchDto } from './dto/coinsSearch.dto';
+import { resultValid } from 'src/utils/valid/result.valid';
 
 @Injectable()
 export class CoinsService {
@@ -51,7 +52,7 @@ export class CoinsService {
   }
   async findCoinsRelationsAndSearch(
     pattern: CoinsSearchDto,
-  ): Promise<Coins[] | string> {
+  ): Promise<Coins[] | void> {
     if (Object.keys(pattern).length === 0) {
       throw new Error(
         `${MESSAGE.EMPTY_SEARCH_QUERY} in ${this.repository.tableName}`,
@@ -59,10 +60,6 @@ export class CoinsService {
     }
     const result = await this.repository.findCoinsRelationsAndSearch(pattern);
     console.log(result);
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<Coins[]>(result, this.repository.tableName);
   }
 }

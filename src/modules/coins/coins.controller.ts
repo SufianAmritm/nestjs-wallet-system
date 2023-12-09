@@ -35,7 +35,9 @@ export class CoinsController {
     return await this.coinsService.postCoins(body);
   }
   @Get('search')
-  async findCoinsByPattern(@Query() query: {}): Promise<Coins[] | string> {
+  async findCoinsRelationsAndSearch(
+    @Query() query: {},
+  ): Promise<Coins[] | void> {
     return await this.coinsService.findCoinsRelationsAndSearch(query);
   }
   @Get(':id')

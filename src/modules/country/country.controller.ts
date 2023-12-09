@@ -38,7 +38,7 @@ export class CountryController {
   @Get('search')
   async findCountryRelationsAndSearch(
     @Query() query: {},
-  ): Promise<Country[] | City[] | string> {
+  ): Promise<Country[] | City[] | void> {
     return await this.countryService.findCountryRelationsAndSearch(
       query,
       false,
@@ -47,7 +47,7 @@ export class CountryController {
   @Get('cities')
   async findCitiesByCountry(
     @Query() query: {},
-  ): Promise<Country[] | City[] | string> {
+  ): Promise<Country[] | City[] | void> {
     const findCity: boolean = true;
     return await this.countryService.findCountryRelationsAndSearch(
       query,

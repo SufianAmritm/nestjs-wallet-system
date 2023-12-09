@@ -33,7 +33,7 @@ export class CityController {
     return await this.cityService.postCity(body);
   }
   @Get('search')
-  async findCityRelationsAndSearch(@Query() query: {}): Promise<City[]> {
+  async findCityRelationsAndSearch(@Query() query: {}): Promise<City[] | void> {
     return await this.cityService.findCityRelationsAndSearch(query);
   }
   @Get(':id')

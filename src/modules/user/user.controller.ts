@@ -33,7 +33,7 @@ export class UserController {
     return await this.userService.postUser(body);
   }
   @Get('search')
-  async findUserByPattern(@Query() query: {}): Promise<User[] | string> {
+  async findUserRelationsAndSearch(@Query() query: {}): Promise<User[] | void> {
     return await this.userService.findUserRelationsAndSearch(query);
   }
   @Get(':id')

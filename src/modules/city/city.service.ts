@@ -13,6 +13,8 @@ import { CityUpdateDto } from './dto/cityUpdate.dto';
 import { CitySearchDto } from './dto/citySearch.dto';
 // import { ICountryService } from '../country/interface/countryService.interface';
 import { ICityService } from './interface/cityService.interface';
+import { resultValid } from 'src/utils/valid/result.valid';
+import { patternValid } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class CityService implements ICityService {
@@ -20,7 +22,7 @@ export class CityService implements ICityService {
     @Inject(ICityRepository) private readonly repository: ICityRepository,
     // @Inject(ICountryService) private readonly countryService: ICountryService,
   ) {}
-
+  public readonly tableName: string = this.repository.tableName;
   async postCity(body: CityDto): Promise<City | void> {
     const data: City = plainToClass(City, body);
 
@@ -37,7 +39,8 @@ export class CityService implements ICityService {
   }
   async findOneCity(id: number): Promise<City[] | void> {
     const findOption: FindOptionsWhere<City> = { id: id };
-    return await this.repository.findById(findOption);
+    const result: City[] = await this.repository.findById(findOption);
+    return resultValid<City[]>(result, this.tableName);
   }
   async updateCity(id: number, body: CityUpdateDto): Promise<UpdateResult> {
     const data: City = plainToClass(City, body);
@@ -54,18 +57,12 @@ export class CityService implements ICityService {
   async deleteCity(id: number): Promise<DeleteResult> {
     return await this.repository.deleteCity(id);
   }
-  async findCityRelationsAndSearch(pattern: CitySearchDto): Promise<City[]> {
-    if (Object.keys(pattern).length === 0) {
-      throw new Error(
-        `${MESSAGE.EMPTY_SEARCH_QUERY} in ${this.repository.tableName}`,
-      );
-    }
+  async findCityRelationsAndSearch(
+    pattern: CitySearchDto,
+  ): Promise<City[] | void> {
+    patternValid<CitySearchDto>(pattern, this.tableName);
     const result = await this.repository.findCityRelationsAndSearch(pattern);
     console.log(result);
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<City[]>(result, this.tableName);
   }
 }
