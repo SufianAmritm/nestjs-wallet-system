@@ -20,6 +20,7 @@ import { Wallet } from './entity/wallet.entity';
 import { DeleteResult } from 'typeorm';
 import { WalletUpdateDto } from './dto/walletUpdate.dto';
 import { WalletSearchDto } from './dto/walletSearch.dto';
+import { WalletTransaction } from '../walletTransaction/entity/walletTransaction.entity';
 
 @Controller('wallet')
 export class WalletController {
@@ -37,8 +38,8 @@ export class WalletController {
   @Get('search')
   async findWalletByPattern(
     @Query() query: WalletSearchDto,
-  ): Promise<Wallet[] | void> {
-    return await this.walletService.findWalletRelationsAndSearch(query);
+  ): Promise<Wallet[] | WalletTransaction[]> {
+    return await this.walletService.findWalletRelationsAndSearch(query, false);
   }
   @Get(':id')
   async findOneWallet(

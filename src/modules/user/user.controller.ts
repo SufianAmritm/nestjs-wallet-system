@@ -19,7 +19,7 @@ import { UserService } from './user.service';
 import { User } from './entity/user.entity';
 import { DeleteResult } from 'typeorm';
 import { UserUpdateDto } from './dto/userUpdate.dto';
-import { UserSearchDto } from './dto/userSearch.dto';
+import { Wallet } from '../wallet/entity/wallet.entity';
 
 @Controller('user')
 export class UserController {
@@ -33,8 +33,10 @@ export class UserController {
     return await this.userService.postUser(body);
   }
   @Get('search')
-  async findUserRelationsAndSearch(@Query() query: {}): Promise<User[] | void> {
-    return await this.userService.findUserRelationsAndSearch(query);
+  async findUserRelationsAndSearch(
+    @Query() query: {},
+  ): Promise<User[] | Wallet[]> {
+    return await this.userService.findUserRelationsAndSearch(query, false);
   }
   @Get(':id')
   async findOneUser(

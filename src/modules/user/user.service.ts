@@ -7,12 +7,14 @@ import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { UserUpdateDto } from './dto/userUpdate.dto';
 import { UserSearchDto } from './dto/userSearch.dto';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
+import { Wallet } from '../wallet/entity/wallet.entity';
+import { IWalletService } from '../wallet/interface/walletService.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(IUserRepository) private readonly repository: IUserRepository,
+    @Inject(IWalletService) private readonly walletService: IWalletService,
   ) {}
   public readonly tableName: string = this.repository.tableName;
   async postUser(body: UserDto): Promise<User | void> {
@@ -51,10 +53,24 @@ export class UserService {
   }
   async findUserRelationsAndSearch(
     pattern: UserSearchDto,
-  ): Promise<User[] | void> {
-    validPattern<UserSearchDto>(pattern, this.tableName);
+    wallet: boolean,
+  ): Promise<User[] | Wallet[]> {
+    const result = await this.repository.findUserRelationsAndSearch(
+      pattern,
+      wallet,
+    );
+    return validResult<User[] | Wallet[]>(result, this.tableName);
+  }
+  async deleteUserByCityId(id: number): Promise<DeleteResult> {
+    const walletIds = (
+      await this.repository.findUserRelationsAndSearch({}, true)
+    ).flatMap((wallet) => wallet.id);
+    if (walletIds.length > 0) {
+      walletIds.forEach(async (walletId) => {
+        await this.walletService.deleteWalletByUserId(Number(walletId));
+      });
+    }
 
-    const result = await this.repository.findUserRelationsAndSearch(pattern);
-    return validResult<User[]>(result, this.tableName);
+    return await this.repository.deleteUser(id);
   }
 }

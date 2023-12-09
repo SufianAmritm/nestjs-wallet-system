@@ -9,31 +9,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { City } from './entity/city.entity';
 import { ICityRepository } from './interface/cityRepo.interface';
 import { CityRepository } from './repository/city.repository';
-import {
-  CountryModule,
-  countryServiceProvider,
-} from '../country/country.module';
+
 import { ICityService } from './interface/cityService.interface';
+import { UserModule } from '../user/user.module';
 const cityRepositoryProvider = [
   {
     provide: ICityRepository,
     useClass: CityRepository,
   },
 ];
-export const cityServiceProvider = [
+const cityServiceProvider = [
   {
     provide: ICityService,
     useClass: CityService,
   },
 ];
 @Module({
-  imports: [TypeOrmModule.forFeature([City])],
+  imports: [TypeOrmModule.forFeature([City]), UserModule],
   controllers: [CityController],
-  providers: [
-    CityService,
-    ...cityRepositoryProvider,
-    // ...countryServiceProvider,
-  ],
-  exports: [...cityRepositoryProvider],
+  providers: [CityService, ...cityRepositoryProvider, ...cityServiceProvider],
+  exports: [...cityRepositoryProvider, ...cityServiceProvider],
 })
 export class CityModule {}

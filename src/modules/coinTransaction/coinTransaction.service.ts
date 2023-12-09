@@ -14,7 +14,6 @@ import { CoinTransactionSearchDto } from './dto/coinTransactionSearch.dto';
 import { Coins } from '../coins/entity/coins.entity';
 import { ICoinsService } from '../coins/interface/coinsService.interface';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
 import { validateCoinTransaction } from 'src/utils/valid/coinTransaction.valid';
 
 @Injectable()
@@ -116,8 +115,6 @@ export class CoinTransactionService {
   async findCoinsRelationsAndSearch(
     pattern: CoinTransactionSearchDto,
   ): Promise<CoinTransaction[] | void> {
-    validPattern<CoinTransactionSearchDto>(pattern, this.tableName);
-
     const result = await this.repository.findCoinsRelationsAndSearch(pattern);
 
     return validResult<CoinTransaction[]>(result, this.tableName);

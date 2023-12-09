@@ -13,12 +13,14 @@ import { CitySearchDto } from './dto/citySearch.dto';
 
 import { ICityService } from './interface/cityService.interface';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
+import { User } from '../user/entity/user.entity';
+import { IUserService } from '../user/interface/userService.interface';
 
 @Injectable()
 export class CityService implements ICityService {
   constructor(
     @Inject(ICityRepository) private readonly repository: ICityRepository,
+    @Inject(IUserService) private readonly userService: IUserService,
   ) {}
   public readonly tableName: string = this.repository.tableName;
   async postCity(body: CityDto): Promise<City | void> {
@@ -57,10 +59,24 @@ export class CityService implements ICityService {
   }
   async findCityRelationsAndSearch(
     pattern: CitySearchDto,
-  ): Promise<City[] | void> {
-    validPattern<CitySearchDto>(pattern, this.tableName);
-    const result = await this.repository.findCityRelationsAndSearch(pattern);
-    console.log(result);
-    return validResult<City[]>(result, this.tableName);
+    user: boolean,
+  ): Promise<City[] | User[]> {
+    const result = await this.repository.findCityRelationsAndSearch(
+      pattern,
+      user,
+    );
+    return validResult<City[] | User[]>(result, this.tableName);
+  }
+  async deleteCityByCountryId(id: number): Promise<DeleteResult> {
+    const userIds = (
+      await this.repository.findCityRelationsAndSearch({}, true)
+    ).flatMap((user) => user.id);
+    if (userIds.length > 0) {
+      userIds.forEach(async (userId) => {
+        await this.userService.deleteUserByCityId(Number(userId));
+      });
+    }
+
+    return await this.repository.deleteCity(id);
   }
 }

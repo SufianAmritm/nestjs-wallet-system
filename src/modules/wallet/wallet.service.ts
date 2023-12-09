@@ -8,7 +8,7 @@ import { WalletUpdateDto } from './dto/walletUpdate.dto';
 import { WalletSearchDto } from './dto/walletSearch.dto';
 import { IWalletService } from './interface/walletService.interface';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
+import { WalletTransaction } from '../walletTransaction/entity/walletTransaction.entity';
 
 @Injectable()
 export class WalletService implements IWalletService {
@@ -50,10 +50,26 @@ export class WalletService implements IWalletService {
   }
   async findWalletRelationsAndSearch(
     pattern: WalletSearchDto,
-  ): Promise<Wallet[] | void> {
-    validPattern<WalletSearchDto>(pattern, this.tableName);
+    walletTransactions: boolean,
+  ): Promise<Wallet[] | WalletTransaction[]> {
+    const result = await this.repository.findWalletRelationsAndSearch(
+      pattern,
+      walletTransactions,
+    );
+    return validResult<Wallet[] | WalletTransaction[]>(result, this.tableName);
+  }
+  async deleteWalletByUserId(id: number): Promise<DeleteResult> {
+    const walletTransactionIds = (
+      await this.repository.findWalletRelationsAndSearch({}, true)
+    ).flatMap((wallet) => wallet.id);
+    if (walletTransactionIds.length > 0) {
+      walletTransactionIds.forEach(async (walletTransactionId) => {
+        await this.walletTransactionService.deleteWalletByUserId(
+          Number(walletTransactionId),
+        );
+      });
+    }
 
-    const result = await this.repository.findWalletRelationsAndSearch(pattern);
-    return validResult<Wallet[]>(result, this.tableName);
+    return await this.repository.deleteUser(id);
   }
 }
