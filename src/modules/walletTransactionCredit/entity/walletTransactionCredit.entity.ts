@@ -4,6 +4,8 @@ import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity('wallet_transaction_credit', { schema: 'wallet' })
 export class WalletTransactionCredit extends BaseEntity {
+  @Column('integer', { name: 'amount', nullable: false })
+  amount: number;
   @Column('boolean', { name: 'free_credit', nullable: false, default: false })
   freeCredit: boolean;
   @Column('boolean', { name: 'paid_credit', nullable: false, default: false })
@@ -25,7 +27,7 @@ export class WalletTransactionCredit extends BaseEntity {
   })
   cashPaidToDeliveryAgent: boolean;
   @Column('boolean', { name: 'unfulfillment', nullable: false, default: false })
-  unfulfillment: boolean;
+  unfullfillment: boolean;
   @Column('boolean', {
     name: 'partial_acceptance',
     nullable: false,
@@ -34,6 +36,8 @@ export class WalletTransactionCredit extends BaseEntity {
   partialAcceptance: boolean;
   @Column('boolean', { name: 'ibill_topup', nullable: false, default: false })
   iBillTopUp: boolean;
+  @Column('integer', { name: 'transaction_id', nullable: false })
+  transactionId: number;
   @OneToOne(() => WalletTransaction)
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;

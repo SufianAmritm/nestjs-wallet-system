@@ -26,6 +26,8 @@ export class WalletTransactionDebit extends BaseEntity {
     default: false,
   })
   creditExpired: boolean;
+  @Column('integer', { name: 'transaction_id', nullable: false })
+  transactionId: number;
   @OneToOne(() => WalletTransaction)
   @JoinColumn({ name: 'Transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;

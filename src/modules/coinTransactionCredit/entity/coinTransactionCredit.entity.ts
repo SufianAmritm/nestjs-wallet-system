@@ -12,6 +12,8 @@ export class CoinTransactionCredit extends BaseEntity {
   coinConversion: boolean;
   @Column('boolean', { name: 'coin_sku', nullable: false, default: false })
   coinSku: boolean;
+  @Column('integer', { name: 'transaction_id', nullable: false })
+  transactionId: number;
   @OneToOne(() => CoinTransaction)
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   coinTransaction: CoinTransaction;

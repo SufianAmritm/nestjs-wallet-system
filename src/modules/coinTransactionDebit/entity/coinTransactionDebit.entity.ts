@@ -10,7 +10,8 @@ export class CoinTransactionDebit extends BaseEntity {
     default: false,
   })
   coinConversion: boolean;
-
+  @Column('integer', { name: 'transaction_id', nullable: false })
+  transactionId: number;
   @OneToOne(() => CoinTransaction)
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   coinTransaction: CoinTransaction;

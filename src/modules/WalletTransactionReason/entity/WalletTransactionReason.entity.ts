@@ -6,6 +6,8 @@ import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 export class WalletTransactionReason extends BaseEntity {
   @Column('character varying', { name: 'reason', nullable: false })
   reason: string;
+  @Column('integer', { name: 'transaction_id', nullable: false })
+  transactionId: number;
   @OneToOne(() => WalletTransaction)
   @JoinColumn({ name: 'Transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;
