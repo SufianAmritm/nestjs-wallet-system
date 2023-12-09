@@ -8,6 +8,8 @@ import { MESSAGE } from 'src/common/customMessages';
 import { UserUpdateDto } from './dto/userUpdate.dto';
 import { UserSearchDto } from './dto/userSearch.dto';
 import { ICityService } from '../city/interface/cityService.interface';
+import { resultValid } from 'src/utils/valid/result.valid';
+import { patternValid } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class UserService {
@@ -15,7 +17,7 @@ export class UserService {
     @Inject(IUserRepository) private readonly repository: IUserRepository,
     // @Inject(ICityService) private readonly cityService: ICityService,
   ) {}
-
+  public readonly tableName: string = this.repository.tableName;
   async postUser(body: UserDto): Promise<User | void> {
     const data: User = plainToClass(User, body);
 
@@ -32,7 +34,8 @@ export class UserService {
   }
   async findOneUser(id: number): Promise<User[] | void> {
     const findOption: FindOptionsWhere<User> = { id: id };
-    return await this.repository.findById(findOption);
+    const result: User[] = await this.repository.findById(findOption);
+    return resultValid<User[]>(result, this.tableName);
   }
   async updateUser(id: number, body: UserUpdateDto): Promise<UpdateResult> {
     const data: User = plainToClass(User, body);
@@ -51,18 +54,10 @@ export class UserService {
   }
   async findUserRelationsAndSearch(
     pattern: UserSearchDto,
-  ): Promise<User[] | string> {
-    if (Object.keys(pattern).length === 0) {
-      throw new Error(
-        `${MESSAGE.EMPTY_SEARCH_QUERY} in ${this.repository.tableName}`,
-      );
-    }
+  ): Promise<User[] | void> {
+    patternValid<UserSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findUserRelationsAndSearch(pattern);
-    if (result !== undefined) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<User[]>(result, this.tableName);
   }
 }

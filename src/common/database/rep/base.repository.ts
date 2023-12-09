@@ -4,12 +4,13 @@ import {
   UpdateResult,
   EntityTarget,
   FindOptionsWhere,
+  QueryFailedError,
 } from 'typeorm';
 
 import { MESSAGE } from 'src/common/customMessages';
 
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { error } from 'console';
+import { dbError } from 'src/utils/database.error';
 
 export class BaseRepository<T> {
   public tableName: string;
@@ -19,27 +20,19 @@ export class BaseRepository<T> {
   async findAll(): Promise<T[]> {
     return await this.repository
       .find()
-      .then((result) => result)
-      .catch((error) => {
-        throw new Error(error);
+      .then((result: T[]) => result)
+      .catch((error: Error) => {
+        throw new Error(error.message);
       });
   }
 
   async postData(data: T): Promise<T | void> {
     return this.repository
       .save(data)
-      .then((result) => result)
-      .catch((error) => {
-        if (error.code === '23503') {
-          throw new Error(
-            `${error.detail} ${MESSAGE.FOREIGN_KEY_VIOLATE}${this.tableName}`,
-          );
-        }
-        if (error.code === '23505') {
-          throw new Error(
-            `${error.detail} ${MESSAGE.UNIQUE_VIOLATE}${this.tableName}`,
-          );
-        }
+      .then((result: T) => result)
+      .catch(async (error: Error) => {
+        await dbError(error);
+        throw new Error(error.message);
       });
   }
   async findById(whereOption: FindOptionsWhere<T>): Promise<T[]> {
@@ -56,45 +49,27 @@ export class BaseRepository<T> {
   ): Promise<UpdateResult> {
     return await this.repository
       .update(whereOption, data)
-      .then((result) => {
+      .then((result: UpdateResult) => {
         if (result.affected) {
           return result;
         }
         throw new Error(`${MESSAGE.NOT_FOUND} in ${this.tableName}`);
       })
-      .catch((error) => {
-        if (error.code === '23503') {
-          throw new Error(
-            `${error.detail} ${MESSAGE.FOREIGN_KEY_VIOLATE}${this.tableName}`,
-          );
-        }
-        if (error.code === '23505') {
-          throw new Error(
-            `${error.detail} ${MESSAGE.UNIQUE_VIOLATE}${this.tableName}`,
-          );
-        }
-        throw new Error(error);
+      .catch(async (error: Error) => {
+        await dbError(error);
+        throw new Error(error.message);
       });
   }
 
-  async postDataWithTransaction(data: T): Promise<any> {
+  async postDataWithTransaction(data: T): Promise<T> {
     return await this.repository.manager.transaction(
       async (transactionManager: EntityManager) => {
         return await transactionManager
           .save(data)
-          .then((result) => result)
-          .catch((error) => {
-            if (error.code === '23503') {
-              throw new Error(
-                `${error.detail} ${MESSAGE.FOREIGN_KEY_VIOLATE}${this.tableName}`,
-              );
-            }
-            if (error.code === '23505') {
-              throw new Error(
-                `${error.detail} ${MESSAGE.UNIQUE_VIOLATE}${this.tableName}`,
-              );
-            }
-            throw new Error(error);
+          .then((result: T) => result)
+          .catch(async (error: Error) => {
+            await dbError(error);
+            throw new Error(error.message);
           });
       },
     );
@@ -109,24 +84,15 @@ export class BaseRepository<T> {
       async (transactionManager: EntityManager) => {
         return await transactionManager
           .update(entity, { id: id }, data)
-          .then((result) => {
+          .then((result: UpdateResult) => {
             if (result.affected) {
               return result;
             }
             throw new Error(`${MESSAGE.NOT_FOUND} in ${this.tableName}`);
           })
-          .catch((error) => {
-            if (error.code === '23503') {
-              throw new Error(
-                `${error.detail} ${MESSAGE.FOREIGN_KEY_VIOLATE}${this.tableName}`,
-              );
-            }
-            if (error.code === '23505') {
-              throw new Error(
-                `${error.detail} ${MESSAGE.UNIQUE_VIOLATE}${this.tableName}`,
-              );
-            }
-            throw new Error(error);
+          .catch(async (error: Error) => {
+            await dbError(error);
+            throw new Error(error.message);
           });
       },
     );

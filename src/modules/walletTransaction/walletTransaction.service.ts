@@ -13,6 +13,8 @@ import { WalletTransactionUpdateDto } from './dto/walletTransactionUpdate.dto';
 import { WalletTransactionSearchDto } from './dto/walletTransactionSearch.dto';
 import { Wallet } from '../wallet/entity/wallet.entity';
 import { IWalletService } from '../wallet/interface/walletService.interface';
+import { resultValid } from 'src/utils/valid/result.valid';
+import { patternValid } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class WalletTransactionService {
@@ -22,7 +24,7 @@ export class WalletTransactionService {
     @Inject(IWalletService)
     private readonly walletService: IWalletService,
   ) {}
-
+  public tableName: string = this.repository.tableName;
   async postWalletTransaction(
     body: WalletTransactionDto,
   ): Promise<WalletTransaction | void> {
@@ -34,23 +36,32 @@ export class WalletTransactionService {
     ) {
       throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
     }
-    const wallet: Wallet = (
-      await this.walletService.findOneWallet(walletId)
-    ).at(0);
-    const { balance: openingWalletBalance } = wallet;
-    delete wallet.id;
+    const wallet: Wallet[] | void =
+      await this.walletService.findOneWallet(walletId);
+    let walletData: Wallet;
+    if (Array.isArray(wallet) && wallet.length > 0) {
+      walletData = wallet[0];
+    }
+    const { balance: openingWalletBalance } = walletData;
+    delete walletData.id;
     if (credit) {
-      wallet.balance = wallet.balance + amount;
+      walletData.balance = walletData.balance + amount;
 
-      await this.walletService.updateWalletWithTransaction(walletId, wallet);
+      await this.walletService.updateWalletWithTransaction(
+        walletId,
+        walletData,
+      );
     }
     if (debit) {
-      wallet.balance = wallet.balance - amount;
-      await this.walletService.updateWalletWithTransaction(walletId, wallet);
+      walletData.balance = walletData.balance - amount;
+      await this.walletService.updateWalletWithTransaction(
+        walletId,
+        walletData,
+      );
     }
     const data: WalletTransaction = plainToClass(WalletTransaction, body);
     data.openingWalletBalance = openingWalletBalance;
-    data.closingWalletBalance = wallet.balance;
+    data.closingWalletBalance = walletData.balance;
     return await this.repository.postData(data);
   }
 
@@ -66,24 +77,32 @@ export class WalletTransactionService {
       throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
     }
 
-    const wallet: Wallet = (
-      await this.walletService.findOneWallet(walletId)
-    ).at(0);
-
-    const { balance: openingWalletBalance } = wallet;
-    delete wallet.id;
+    const wallet: Wallet[] | void =
+      await this.walletService.findOneWallet(walletId);
+    let walletData: Wallet;
+    if (Array.isArray(wallet) && wallet.length > 0) {
+      walletData = wallet[0];
+    }
+    const { balance: openingWalletBalance } = walletData;
+    delete walletData.id;
     if (credit) {
-      wallet.balance = openingWalletBalance + amount;
-      await this.walletService.updateWalletWithTransaction(walletId, wallet);
+      walletData.balance = openingWalletBalance + amount;
+      await this.walletService.updateWalletWithTransaction(
+        walletId,
+        walletData,
+      );
     }
     if (debit) {
-      wallet.balance = wallet.balance - amount;
-      await this.walletService.updateWalletWithTransaction(walletId, wallet);
+      walletData.balance = walletData.balance - amount;
+      await this.walletService.updateWalletWithTransaction(
+        walletId,
+        walletData,
+      );
     }
 
     const data: WalletTransaction = plainToClass(WalletTransaction, body);
     data.openingWalletBalance = openingWalletBalance;
-    data.closingWalletBalance = wallet.balance;
+    data.closingWalletBalance = walletData.balance;
     return await this.repository.postDataWithTransaction(data);
   }
   async findAllWalletTransactions(): Promise<WalletTransaction[]> {
@@ -97,11 +116,7 @@ export class WalletTransactionService {
     const result: WalletTransaction[] =
       await this.repository.findById(findOption);
 
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<WalletTransaction[]>(result, this.tableName);
   }
   async updateWalletTransaction(
     id: number,
@@ -127,18 +142,11 @@ export class WalletTransactionService {
   }
   async findWalletRelationsAndSearch(
     pattern: WalletTransactionSearchDto,
-  ): Promise<WalletTransaction[] | string> {
-    if (Object.keys(pattern).length === 0) {
-      throw new Error(
-        `${MESSAGE.EMPTY_SEARCH_QUERY} in ${this.repository.tableName}`,
-      );
-    }
+  ): Promise<WalletTransaction[] | void> {
+    patternValid<WalletTransactionSearchDto>(pattern, this.tableName);
+
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
     console.log(result);
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<WalletTransaction[]>(result, this.tableName);
   }
 }

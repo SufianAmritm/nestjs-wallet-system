@@ -38,9 +38,9 @@ export class CoinTransactionController {
     );
   }
   @Get('search')
-  async findCoinTransactionByPattern(
+  async findCoinTransactionRelationsAndSearch(
     @Query() query: {},
-  ): Promise<CoinTransaction[] | string> {
+  ): Promise<CoinTransaction[] | void> {
     return await this.coinTransactionService.findCoinsRelationsAndSearch(query);
   }
   @Get(':id')

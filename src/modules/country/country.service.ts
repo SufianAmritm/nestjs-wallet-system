@@ -18,13 +18,15 @@ import { CountryUpdateDto } from './dto/countryUpdate.dto';
 import { CountrySearchDto } from './dto/countrySearch.dto';
 import { City } from '../city/entity/city.entity';
 import { ICountryService } from './interface/countryService.interface';
+import { resultValid } from 'src/utils/valid/result.valid';
+import { patternValid } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class CountryService implements ICountryService {
   constructor(
     @Inject(ICountryRepository) private readonly repository: ICountryRepository,
   ) {}
-
+  public readonly tableName: string = this.repository.tableName;
   async postCountry(body: CountryDto): Promise<Country | void> {
     const data: Country = plainToClass(Country, body);
     return await this.repository.postData(data);
@@ -39,7 +41,8 @@ export class CountryService implements ICountryService {
   }
   async findOneCountry(id: number): Promise<Country[] | void> {
     const findOption: FindOptionsWhere<Country> = { id: id };
-    return await this.repository.findById(findOption);
+    const result: Country[] = await this.repository.findById(findOption);
+    return resultValid<Country[]>(result, this.tableName);
   }
   async updateCountry(
     id: number,
@@ -63,20 +66,13 @@ export class CountryService implements ICountryService {
   async findCountryRelationsAndSearch(
     pattern: CountrySearchDto,
     findCity: boolean,
-  ): Promise<Country[] | City[] | string> {
-    if (Object.keys(pattern).length === 0) {
-      throw new Error(
-        `${MESSAGE.EMPTY_SEARCH_QUERY} in ${this.repository.tableName}`,
-      );
-    }
+  ): Promise<Country[] | City[] | void> {
+    patternValid<CountrySearchDto>(pattern, this.tableName);
+
     const result = await this.repository.findCountryRelationsAndSearch(
       pattern,
       findCity,
     );
-    if (result.length > 0) {
-      return result;
-    } else {
-      throw new Error(`${MESSAGE.NOT_FOUND} in ${this.repository.tableName}`);
-    }
+    return resultValid<Country[] | City[]>(result, this.tableName);
   }
 }
