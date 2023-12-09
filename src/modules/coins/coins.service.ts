@@ -11,7 +11,7 @@ import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { MESSAGE } from 'src/common/customMessages';
 import { CoinsUpdateDto } from './dto/coinsUpdate.dto';
 import { CoinsSearchDto } from './dto/coinsSearch.dto';
-import { resultValid } from 'src/utils/valid/result.valid';
+import { validResult } from 'src/utils/valid/result.valid';
 
 @Injectable()
 export class CoinsService {
@@ -60,6 +60,6 @@ export class CoinsService {
     }
     const result = await this.repository.findCoinsRelationsAndSearch(pattern);
     console.log(result);
-    return resultValid<Coins[]>(result, this.repository.tableName);
+    return validResult<Coins[]>(result, this.repository.tableName);
   }
 }

@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/database/entity/base.entity';
 import { WalletTransaction } from 'src/modules/walletTransaction/entity/walletTransaction.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity('transaction_reason', { schema: 'wallet' })
 export class WalletTransactionReason extends BaseEntity {
@@ -8,7 +8,10 @@ export class WalletTransactionReason extends BaseEntity {
   reason: string;
   @Column('integer', { name: 'transaction_id', nullable: false })
   transactionId: number;
-  @OneToOne(() => WalletTransaction)
-  @JoinColumn({ name: 'Transaction_id', referencedColumnName: 'id' })
+  @ManyToOne(
+    () => WalletTransaction,
+    (walletTransaction) => walletTransaction.WalletTransactionReason,
+  )
+  @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;
 }

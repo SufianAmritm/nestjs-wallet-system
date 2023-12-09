@@ -24,7 +24,10 @@ export class WalletTransactionCreditDto {
   partialAcceptance: boolean;
   @IsBoolean()
   @IsNotEmpty()
-  IBillTopUp: boolean;
+  iBillTopUp: boolean;
+  @IsBoolean()
+  @IsNotEmpty()
+  gift: boolean;
   @IsNumber()
   @IsNotEmpty()
   @Min(1)

@@ -23,7 +23,8 @@ export class CoinTransactionRepository
   ): Promise<CoinTransaction[]> {
     const {
       id,
-      amount,
+      creditAmount,
+      debitAmount,
       coinsId,
       credit,
       debit,
@@ -32,10 +33,12 @@ export class CoinTransactionRepository
       keyword,
     } = pattern;
 
-    if (id || amount || coinsId) {
+    if (id || creditAmount || debitAmount || coinsId) {
       const whereOption: Partial<Record<string, any>> = {};
       if (id) whereOption.id = id;
-      if (amount) whereOption.amount = amount;
+      if (creditAmount) whereOption.creditAmount = creditAmount;
+      if (debitAmount) whereOption.debitAmount = debitAmount;
+
       if (coinsId) whereOption.coinsId = coinsId;
       if (credit) whereOption.credit = credit;
       if (debit) whereOption.debit = debit;
@@ -60,9 +63,18 @@ export class CoinTransactionRepository
               .where(`CAST (${alias}.id as text) ILIKE :keyPattern`, {
                 keyPattern,
               })
-              .orWhere(`CAST (${alias}.amount as text) ILIKE :keyPattern`, {
-                keyPattern,
-              })
+              .orWhere(
+                `CAST (${alias}.creditAmount as text) ILIKE :keyPattern`,
+                {
+                  keyPattern,
+                },
+              )
+              .orWhere(
+                `CAST (${alias}.debitAmount as text) ILIKE :keyPattern`,
+                {
+                  keyPattern,
+                },
+              )
               .orWhere(`CAST(${alias}.coinsId as text) ILIKE :keyPattern`, {
                 keyPattern,
               })

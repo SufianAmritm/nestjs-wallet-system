@@ -13,13 +13,17 @@ import { IWalletService } from './interface/walletService.interface';
 const walletRepositoryProvider = [
   { provide: IWalletRepository, useClass: WalletRepository },
 ];
-export const walletServiceProvider = [
+const walletServiceProvider = [
   { provide: IWalletService, useClass: WalletService },
 ];
 @Module({
   imports: [TypeOrmModule.forFeature([Wallet])],
   controllers: [WalletController],
-  providers: [WalletService, ...walletRepositoryProvider],
-  exports: [...walletRepositoryProvider],
+  providers: [
+    WalletService,
+    ...walletRepositoryProvider,
+    ...walletServiceProvider,
+  ],
+  exports: [...walletRepositoryProvider, ...walletServiceProvider],
 })
 export class WalletModule {}

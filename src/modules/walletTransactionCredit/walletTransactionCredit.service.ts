@@ -10,16 +10,36 @@ import { plainToClass } from 'class-transformer';
 import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { WalletTransactionCreditUpdateDto } from './dto/walletTransactionCreditUpdate.dto';
 import { WalletTransactionCreditSearchDto } from './dto/walletTransactionCreditSearch.dto';
-import { resultValid } from 'src/utils/valid/result.valid';
-import { patternValid } from 'src/utils/valid/pattern.valid';
+import { validResult } from 'src/utils/valid/result.valid';
+import { validPattern } from 'src/utils/valid/pattern.valid';
+import { IWalletTransactionService } from '../walletTransaction/interface/walletTransactionService.interface';
+import { WalletTransaction } from '../walletTransaction/entity/walletTransaction.entity';
+import { validCredit } from 'src/utils/valid/credit.valid';
+import { creditInputValidation } from 'src/utils/valid/creditInput.valid';
 
 @Injectable()
 export class WalletTransactionCreditService {
   constructor(
     @Inject(IWalletTransactionCreditRepository)
     private readonly repository: IWalletTransactionCreditRepository,
+    @Inject(IWalletTransactionService)
+    private readonly walletTransactionService: IWalletTransactionService,
   ) {}
   public tableName: string = this.repository.tableName;
+
+  async creditValidation(transactionId: number): Promise<number> {
+    const walletTransaction: WalletTransaction[] | void =
+      await this.walletTransactionService.findOneWalletTransaction(
+        transactionId,
+      );
+    let credit: boolean;
+    if (Array.isArray(walletTransaction) && walletTransaction.length > 0) {
+      credit = walletTransaction[0].credit;
+    }
+    validCredit(credit, this.tableName);
+    return walletTransaction[0].amount;
+  }
+
   async postWalletTransactionCredit(
     body: WalletTransactionCreditDto,
   ): Promise<WalletTransactionCredit | void> {
@@ -27,6 +47,9 @@ export class WalletTransactionCreditService {
       WalletTransactionCredit,
       body,
     );
+
+    creditInputValidation(data);
+    data.amount = await this.creditValidation(data.transactionId);
 
     return await this.repository.postData(data);
   }
@@ -38,6 +61,8 @@ export class WalletTransactionCreditService {
       WalletTransactionCredit,
       body,
     );
+    creditInputValidation(data);
+    data.amount = await this.creditValidation(data.transactionId);
 
     return await this.repository.postDataWithTransaction(data);
   }
@@ -52,7 +77,7 @@ export class WalletTransactionCreditService {
     const result: WalletTransactionCredit[] =
       await this.repository.findById(findOption);
 
-    return resultValid<WalletTransactionCredit[]>(result, this.tableName);
+    return validResult<WalletTransactionCredit[]>(result, this.tableName);
   }
   async updateWalletTransactionCredit(
     id: number,
@@ -62,6 +87,9 @@ export class WalletTransactionCreditService {
       WalletTransactionCredit,
       body,
     );
+    if (data.transactionId) {
+      data.amount = await this.creditValidation(data.transactionId);
+    }
     const findOption: FindOptionsWhere<WalletTransactionCredit> = { id: id };
     return await this.repository.updateById(findOption, data);
   }
@@ -73,6 +101,9 @@ export class WalletTransactionCreditService {
       WalletTransactionCredit,
       body,
     );
+    if (data.transactionId) {
+      data.amount = await this.creditValidation(data.transactionId);
+    }
     return await this.repository.updateByIdWithTransaction(
       id,
       data,
@@ -85,10 +116,10 @@ export class WalletTransactionCreditService {
   async findWalletRelationsAndSearch(
     pattern: WalletTransactionCreditSearchDto,
   ): Promise<WalletTransactionCredit[] | void> {
-    patternValid<WalletTransactionCreditSearchDto>(pattern, this.tableName);
+    validPattern<WalletTransactionCreditSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
     console.log(result);
-    return resultValid<WalletTransactionCredit[]>(result, this.tableName);
+    return validResult<WalletTransactionCredit[]>(result, this.tableName);
   }
 }

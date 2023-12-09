@@ -35,7 +35,7 @@ export class WalletTransactionCreditController {
   async postWalletTransactionCredit(
     @Body() body: WalletTransactionCreditDto,
   ): Promise<any> {
-    return await this.walletTransactionCreditService.postWalletTransactionCreditWithTransaction(
+    return await this.walletTransactionCreditService.postWalletTransactionCredit(
       body,
     );
   }

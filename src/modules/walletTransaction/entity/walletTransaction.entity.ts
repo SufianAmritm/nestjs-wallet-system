@@ -1,18 +1,31 @@
 import { BaseEntity } from 'src/common/database/entity/base.entity';
-import { WalletTransactionReason } from 'src/modules/WalletTransactionReason/entity/WalletTransactionReason.entity';
+import { WalletTransactionReason } from 'src/modules/WalletTransactionReason/entity/walletTransactionReason.entity';
 import { Wallet } from 'src/modules/wallet/entity/wallet.entity';
 import { WalletTransactionCredit } from 'src/modules/walletTransactionCredit/entity/walletTransactionCredit.entity';
 import { WalletTransactionDebit } from 'src/modules/walletTransactionDebit/entity/walletTransactionDebit.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 @Entity('wallet_transactions', { schema: 'wallet' })
 export class WalletTransaction extends BaseEntity {
   @Column('integer', {
-    name: 'amount',
+    name: 'credit_amount',
     nullable: false,
     default: 0,
   })
-  amount: number;
+  creditAmount: number;
+  @Column('integer', {
+    name: 'debit_amount',
+    nullable: false,
+    default: 0,
+  })
+  debitAmount: number;
   @Column('boolean', { name: 'credit', nullable: false })
   credit: boolean;
   @Column('boolean', { name: 'debit', nullable: false })
@@ -34,10 +47,19 @@ export class WalletTransaction extends BaseEntity {
   @ManyToOne(() => Wallet, (wallet) => wallet.walletTransaction)
   @JoinColumn({ name: 'wallet_id', referencedColumnName: 'id' })
   wallet: Wallet;
-  @OneToOne(() => WalletTransactionCredit)
-  walletTransactionCredit: WalletTransactionCredit;
-  @OneToOne(() => WalletTransactionDebit)
-  walletTransactionDebit: WalletTransactionDebit;
-  @OneToOne(() => WalletTransactionReason)
-  WalletTransactionReason: WalletTransactionReason;
+  @OneToMany(
+    () => WalletTransactionCredit,
+    (walletTransactionCredit) => walletTransactionCredit.walletTransaction,
+  )
+  walletTransactionCredit: WalletTransactionCredit[];
+  @OneToMany(
+    () => WalletTransactionDebit,
+    (walletTransactionDebit) => walletTransactionDebit.walletTransaction,
+  )
+  walletTransactionDebit: WalletTransactionDebit[];
+  @OneToMany(
+    () => WalletTransactionReason,
+    (walletTransactionReason) => walletTransactionReason.walletTransaction,
+  )
+  WalletTransactionReason: WalletTransactionReason[];
 }

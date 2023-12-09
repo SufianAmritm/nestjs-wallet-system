@@ -1,9 +1,20 @@
-import { IsBoolean, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
 
 export class CoinTransactionDto {
   @IsNumber()
   @IsNotEmpty()
-  amount: number;
+  @IsOptional()
+  debitAmount?: number;
+  @IsNumber()
+  @IsNotEmpty()
+  @IsOptional()
+  creditAmount?: number;
   @IsBoolean()
   @IsNotEmpty()
   credit: boolean;

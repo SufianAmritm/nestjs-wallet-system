@@ -16,7 +16,11 @@ export class CoinTransactionSearchDto {
   @IsNumber()
   @IsNotEmpty()
   @IsOptional()
-  amount?: number;
+  debitAmount?: number;
+  @IsNumber()
+  @IsNotEmpty()
+  @IsOptional()
+  creditAmount?: number;
   @IsNumber()
   @IsNotEmpty()
   @IsOptional()

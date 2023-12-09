@@ -8,4 +8,8 @@ export enum MESSAGE {
   INVALID_CREDIT_DEBIT = 'Credit and Debit cannot be both true or false. ',
   FOREIGN_KEY_VIOLATE = 'Foreign Key violation while posting date in the table',
   UNIQUE_VIOLATE = 'Unique key violation while posting data in table',
+  CREDIT_INVALID = 'The transaction is not credit type. Recheck if it is credit or debit type.',
+  DEBIT_INVALID = 'The transaction is not debit type. Recheck if it is credit or debit type.',
+  INVALID_TRANSACTION = 'The transaction must have both or one of credit and debit amounts',
+  INVALID_TRANSACTION_AMOUNT = 'The transaction must have matching amounts with its type for example credit:true-->creditAmount && !debitAmount',
 }

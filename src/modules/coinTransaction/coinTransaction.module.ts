@@ -11,15 +11,30 @@ import { CoinsModule } from '../coins/coins.module';
 
 import { ICoinTransactionRepository } from './interface/coinTransactionRepo.interface';
 import { CoinTransactionRepository } from './repository/coinTransaction.repository';
+import { ICoinTransactionService } from './interface/coinTransactionService.interface';
 const coinTransactionRepositoryProvider = [
   {
     provide: ICoinTransactionRepository,
     useClass: CoinTransactionRepository,
   },
 ];
+const coinTransactionServiceProvider = [
+  {
+    provide: ICoinTransactionService,
+    useClass: CoinTransactionService,
+  },
+];
 @Module({
   imports: [TypeOrmModule.forFeature([CoinTransaction]), CoinsModule],
   controllers: [CoinTransactionController],
-  providers: [CoinTransactionService, ...coinTransactionRepositoryProvider],
+  providers: [
+    CoinTransactionService,
+    ...coinTransactionRepositoryProvider,
+    ...coinTransactionServiceProvider,
+  ],
+  exports: [
+    ...coinTransactionRepositoryProvider,
+    ...coinTransactionServiceProvider,
+  ],
 })
 export class CoinTransactionModule {}
