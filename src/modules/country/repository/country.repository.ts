@@ -3,7 +3,13 @@ import { Country } from '../entity/country.entity';
 import { BaseRepository } from 'src/common/database/rep/base.repository';
 import { ICountryRepository } from '../interface/countryRepo.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DeleteResult, Repository } from 'typeorm';
+import {
+  Brackets,
+  DeleteResult,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 import { CountrySearchDto } from '../dto/countrySearch.dto';
 import { City } from 'src/modules/city/entity/city.entity';
@@ -51,7 +57,7 @@ export class CountryRepository
     const { id, name, currency, keyword } = pattern;
 
     if (id || name || currency) {
-      const whereOption: Partial<Record<string, any>> = {};
+      const whereOption: FindOptionsWhere<Country> = {};
 
       for (const i in pattern) {
         if (i !== keyword) {

@@ -11,7 +11,6 @@ import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { CoinTransactionDebitUpdateDto } from './dto/coinTransactionDebitUpdate.dto';
 import { CoinTransactionDebitSearchDto } from './dto/coinTransactionDebitSearch.dto';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
 import { ICoinTransactionService } from '../coinTransaction/interface/coinTransactionService.interface';
 import { CoinTransaction } from '../coinTransaction/entity/coinTransaction.entity';
 import { validDebit } from 'src/utils/valid/debit.valid';
@@ -102,8 +101,6 @@ export class CoinTransactionDebitService {
   async findCoinRelationsAndSearch(
     pattern: CoinTransactionDebitSearchDto,
   ): Promise<CoinTransactionDebit[] | void> {
-    validPattern<CoinTransactionDebitSearchDto>(pattern, this.tableName);
-
     const result = await this.repository.findCoinRelationsAndSearch(pattern);
 
     return validResult<CoinTransactionDebit[]>(result, this.tableName);

@@ -1,19 +1,15 @@
-/*
-https://docs.nestjs.com/providers#services
-*/
-
 import { Inject, Injectable } from '@nestjs/common';
-import { ICityRepository } from './interface/cityRepo.interface';
-import { CityDto } from './dto/city.dto';
-import { City } from './entity/city.entity';
 import { plainToClass } from 'class-transformer';
-import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
-import { CityUpdateDto } from './dto/cityUpdate.dto';
-import { CitySearchDto } from './dto/citySearch.dto';
-
-import { ICityService } from './interface/cityService.interface';
-import { validResult } from 'src/utils/valid/result.valid';
 import { validPattern } from 'src/utils/valid/pattern.valid';
+import { validResult } from 'src/utils/valid/result.valid';
+import { DeleteResult, FindOptionsWhere, UpdateResult } from 'typeorm';
+
+import { CityDto } from './dto/city.dto';
+import { CitySearchDto } from './dto/citySearch.dto';
+import { CityUpdateDto } from './dto/cityUpdate.dto';
+import { City } from './entity/city.entity';
+import { ICityRepository } from './interface/cityRepo.interface';
+import { ICityService } from './interface/cityService.interface';
 
 @Injectable()
 export class CityService implements ICityService {
