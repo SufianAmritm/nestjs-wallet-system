@@ -1,7 +1,3 @@
-/*
-https://docs.nestjs.com/controllers#controllers
-*/
-
 import {
   Body,
   Controller,
@@ -14,12 +10,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { CityDto } from './dto/city.dto';
-import { CityService } from './city.service';
-import { City } from './entity/city.entity';
 import { DeleteResult } from 'typeorm';
+
+import { CityService } from './city.service';
+import { CityDto } from './dto/city.dto';
 import { CityUpdateDto } from './dto/cityUpdate.dto';
-import { CitySearchDto } from './dto/citySearch.dto';
+import { City } from './entity/city.entity';
 
 @Controller('city')
 export class CityController {

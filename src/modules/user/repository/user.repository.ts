@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DeleteResult, In, Repository } from 'typeorm';
 
 import { UserSearchDto } from '../dto/userSearch.dto';
+import { Wallet } from 'src/modules/wallet/entity/wallet.entity';
 
 @Injectable()
 export class UserRepository

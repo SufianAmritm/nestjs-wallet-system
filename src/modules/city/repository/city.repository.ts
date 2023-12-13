@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DeleteResult, Repository } from 'typeorm';
 
 import { CitySearchDto } from '../dto/citySearch.dto';
+import { User } from 'src/modules/user/entity/user.entity';
 
 @Injectable()
 export class CityRepository
@@ -77,6 +78,21 @@ export class CityRepository
   async deleteCity(cityRelations: any): Promise<DeleteResult> {
     try {
       return await this.repository.softRemove(cityRelations);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async deleteCityByCountryId(id: number): Promise<User[]> {
+    try {
+      const userIds: User[] = (
+        await this.repository.find({
+          where: { countryId: id },
+          loadRelationIds: true,
+        })
+      ).flatMap((city) => city.user);
+
+      await this.repository.softDelete({ countryId: id });
+      return userIds;
     } catch (error) {
       throw new Error(error.message);
     }

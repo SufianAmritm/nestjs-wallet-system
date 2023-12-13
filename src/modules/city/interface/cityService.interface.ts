@@ -1,4 +1,5 @@
 import { City } from '../entity/city.entity';
+
 export const ICityService = Symbol('ICityService');
 
 export interface ICityService {

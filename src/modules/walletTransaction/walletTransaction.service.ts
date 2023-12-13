@@ -14,7 +14,6 @@ import { WalletTransactionSearchDto } from './dto/walletTransactionSearch.dto';
 import { Wallet } from '../wallet/entity/wallet.entity';
 import { IWalletService } from '../wallet/interface/walletService.interface';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
 import { validateWalletTransaction } from 'src/utils/valid/walletTransaction.valid';
 
 @Injectable()
@@ -134,8 +133,6 @@ export class WalletTransactionService {
   async findWalletRelationsAndSearch(
     pattern: WalletTransactionSearchDto,
   ): Promise<WalletTransaction[] | void> {
-    validPattern<WalletTransactionSearchDto>(pattern, this.tableName);
-
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
 
     return validResult<WalletTransaction[]>(result, this.tableName);

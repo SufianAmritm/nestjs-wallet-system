@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DeleteResult, Repository } from 'typeorm';
 
 import { WalletSearchDto } from '../dto/walletSearch.dto';
+import { WalletTransaction } from 'src/modules/walletTransaction/entity/walletTransaction.entity';
 
 @Injectable()
 export class WalletRepository
@@ -20,7 +21,14 @@ export class WalletRepository
   }
   async findWalletRelationsAndSearch(
     pattern: WalletSearchDto,
-  ): Promise<Wallet[]> {
+    walletTransactions: boolean,
+  ): Promise<Wallet[] | WalletTransaction[]> {
+    if (walletTransactions) {
+      return (
+        await this.repository.find({ relations: { walletTransaction: true } })
+      ).flatMap((wallet) => wallet.walletTransaction);
+    }
+
     const { id, balance, userId, keyword } = pattern;
 
     if (id || balance || userId) {

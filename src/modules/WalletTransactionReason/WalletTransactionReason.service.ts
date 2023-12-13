@@ -8,7 +8,6 @@ import { WalletTransactionReasonUpdateDto } from './dto/walletTransactionReasonU
 import { WalletTransactionReasonSearchDto } from './dto/walletTransactionReasonSearch.dto';
 
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class WalletTransactionReasonService {
@@ -79,8 +78,6 @@ export class WalletTransactionReasonService {
   async findWalletTransactionReasonRelationsAndSearch(
     pattern: WalletTransactionReasonSearchDto,
   ): Promise<WalletTransactionReason[]> {
-    validPattern<WalletTransactionReasonSearchDto>(pattern, this.tableName);
-
     const result =
       await this.repository.findWalletTransactionReasonRelationsAndSearch(
         pattern,

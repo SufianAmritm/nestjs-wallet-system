@@ -1,7 +1,3 @@
-/*
-https://docs.nestjs.com/providers#services
-*/
-
 import { Inject, Injectable } from '@nestjs/common';
 import { ICountryRepository } from './interface/countryRepo.interface';
 import { CountryDto } from './dto/country.dto';
@@ -13,7 +9,6 @@ import { CountrySearchDto } from './dto/countrySearch.dto';
 import { City } from '../city/entity/city.entity';
 import { ICountryService } from './interface/countryService.interface';
 import { validResult } from 'src/utils/valid/result.valid';
-import { validPattern } from 'src/utils/valid/pattern.valid';
 
 @Injectable()
 export class CountryService implements ICountryService {
@@ -67,8 +62,6 @@ export class CountryService implements ICountryService {
     findAllRelations: boolean,
     findCity: boolean,
   ): Promise<Country[] | City[] | void> {
-    validPattern<CountrySearchDto>(pattern, this.tableName);
-
     const result = await this.repository.findCountryRelationsAndSearch(
       pattern,
       findAllRelations,

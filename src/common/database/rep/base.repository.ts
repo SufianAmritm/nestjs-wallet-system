@@ -1,17 +1,13 @@
+import { MESSAGE } from 'src/common/customMessages';
+import { dbError } from 'src/utils/database.error';
 import {
   EntityManager,
-  Repository,
-  UpdateResult,
   EntityTarget,
   FindOptionsWhere,
-  QueryFailedError,
-  In,
+  Repository,
+  UpdateResult,
 } from 'typeorm';
-
-import { MESSAGE } from 'src/common/customMessages';
-
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { dbError } from 'src/utils/database.error';
 
 export class BaseRepository<T> {
   public tableName: string;
