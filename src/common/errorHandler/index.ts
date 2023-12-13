@@ -6,8 +6,6 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { error } from 'console';
-
 import { Request, Response } from 'express';
 
 @Catch()

@@ -8,11 +8,17 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 export class User extends BaseEntity {
   @Column('character varying', { name: 'name', nullable: false })
   name: string;
-  @ManyToOne(() => City, (city) => city.user)
+  @Column('integer', { name: 'city_id', nullable: false })
+  cityId: number;
+  @ManyToOne(() => City, (city) => city.user, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'city_id', referencedColumnName: 'id' })
   city: City;
-  @OneToOne(() => Wallet)
+  @OneToOne(() => Wallet, (wallet) => wallet.user, {
+    cascade: true,
+  })
   wallet: Wallet;
-  @OneToOne(() => Coins)
+  @OneToOne(() => Coins, (coins) => coins.user, {
+    cascade: true,
+  })
   coins: Coins;
 }

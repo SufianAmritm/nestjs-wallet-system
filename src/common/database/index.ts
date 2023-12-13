@@ -12,10 +12,12 @@ export class DatabaseModule implements TypeOrmOptionsFactory {
       username: config.database.username,
       database: config.database.database,
       password: config.database.password,
+      schema: config.database.schema,
+      migrations: ['src/migrations/*.ts'],
       keepConnectionAlive: true,
       autoLoadEntities: true,
       logging: true,
-      // entities: [Container, Product],
+
       extra: {
         min: 2,
         max: 10,

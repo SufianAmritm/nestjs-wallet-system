@@ -7,9 +7,15 @@ import { Column, Entity, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 export class Coins extends BaseEntity {
   @Column('integer', { name: 'amount', nullable: false, default: 0 })
   amount: number;
-  @OneToOne(() => User)
+  @Column('integer', { name: 'user_id', nullable: false })
+  userId: number;
+  @OneToOne(() => User, (user) => user.coins, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
-  @OneToMany(() => CoinTransaction, (coinTransaction) => coinTransaction.coins)
+  @OneToMany(
+    () => CoinTransaction,
+    (coinTransaction) => coinTransaction.coins,
+    { cascade: true },
+  )
   coinTransaction: CoinTransaction[];
 }
