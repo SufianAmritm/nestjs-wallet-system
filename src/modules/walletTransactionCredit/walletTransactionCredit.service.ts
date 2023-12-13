@@ -119,7 +119,7 @@ export class WalletTransactionCreditService {
     validPattern<WalletTransactionCreditSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
-    console.log(result);
+
     return validResult<WalletTransactionCredit[]>(result, this.tableName);
   }
 }

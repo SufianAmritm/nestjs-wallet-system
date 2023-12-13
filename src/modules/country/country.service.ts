@@ -54,17 +54,24 @@ export class CountryService implements ICountryService {
     return await this.repository.updateByIdWithTransaction(id, data, Country);
   }
   async deleteCountry(id: number): Promise<DeleteResult> {
-    return await this.repository.deleteCountry(id);
+    const countryRelations = await this.findCountryRelationsAndSearch(
+      { id: id },
+      true,
+      false,
+    );
+    return await this.repository.deleteCountry(countryRelations);
   }
 
   async findCountryRelationsAndSearch(
     pattern: CountrySearchDto,
+    findAllRelations: boolean,
     findCity: boolean,
   ): Promise<Country[] | City[] | void> {
     validPattern<CountrySearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findCountryRelationsAndSearch(
       pattern,
+      findAllRelations,
       findCity,
     );
     return validResult<Country[] | City[]>(result, this.tableName);

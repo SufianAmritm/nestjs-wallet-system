@@ -5,9 +5,10 @@ import { CountrySearchDto } from '../dto/countrySearch.dto';
 import { City } from 'src/modules/city/entity/city.entity';
 export const ICountryRepository = Symbol('ICountryRepository');
 export interface ICountryRepository extends BaseRepository<Country> {
-  deleteCountry(id: number): Promise<DeleteResult>;
+  deleteCountry(countryRelations: any): Promise<DeleteResult>;
   findCountryRelationsAndSearch(
     pattern: CountrySearchDto,
-    city: boolean,
+    findAllRelations: boolean,
+    findCity: boolean,
   ): Promise<Country[] | City[]>;
 }

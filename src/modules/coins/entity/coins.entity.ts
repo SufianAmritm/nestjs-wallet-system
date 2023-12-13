@@ -9,9 +9,13 @@ export class Coins extends BaseEntity {
   amount: number;
   @Column('integer', { name: 'user_id', nullable: false })
   userId: number;
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user) => user.coins, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
-  @OneToMany(() => CoinTransaction, (coinTransaction) => coinTransaction.coins)
+  @OneToMany(
+    () => CoinTransaction,
+    (coinTransaction) => coinTransaction.coins,
+    { cascade: true },
+  )
   coinTransaction: CoinTransaction[];
 }

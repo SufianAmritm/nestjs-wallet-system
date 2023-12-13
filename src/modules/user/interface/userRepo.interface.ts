@@ -4,6 +4,12 @@ import { DeleteResult } from 'typeorm';
 import { UserSearchDto } from '../dto/userSearch.dto';
 export const IUserRepository = Symbol('IUserRepository');
 export interface IUserRepository extends BaseRepository<User> {
-  deleteUser(id: number): Promise<DeleteResult>;
-  findUserRelationsAndSearch(pattern: UserSearchDto): Promise<User[]>;
+  deleteUser(walletAndCoinRelations: any): Promise<DeleteResult>;
+  findUserRelationsAndSearch(
+    pattern: UserSearchDto,
+    findAllRelations: boolean,
+    findWallets: boolean,
+    findCoins: boolean,
+  ): Promise<User[]>;
+  checkValidIds(ids: Number[]): Promise<any>;
 }

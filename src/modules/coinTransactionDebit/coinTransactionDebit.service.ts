@@ -105,7 +105,7 @@ export class CoinTransactionDebitService {
     validPattern<CoinTransactionDebitSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findCoinRelationsAndSearch(pattern);
-    console.log(result);
+
     return validResult<CoinTransactionDebit[]>(result, this.tableName);
   }
 }

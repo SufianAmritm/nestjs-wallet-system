@@ -10,7 +10,8 @@ export class WalletTransactionReason extends BaseEntity {
   transactionId: number;
   @ManyToOne(
     () => WalletTransaction,
-    (walletTransaction) => walletTransaction.WalletTransactionReason,
+    (walletTransaction) => walletTransaction.walletTransactionReason,
+    { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;

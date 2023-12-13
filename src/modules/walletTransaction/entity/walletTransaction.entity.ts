@@ -44,22 +44,27 @@ export class WalletTransaction extends BaseEntity {
   closingWalletBalance: number;
   @Column('integer', { name: 'wallet_id', nullable: false })
   walletId: number;
-  @ManyToOne(() => Wallet, (wallet) => wallet.walletTransaction)
+  @ManyToOne(() => Wallet, (wallet) => wallet.walletTransaction, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'wallet_id', referencedColumnName: 'id' })
   wallet: Wallet;
   @OneToMany(
     () => WalletTransactionCredit,
     (walletTransactionCredit) => walletTransactionCredit.walletTransaction,
+    { cascade: true },
   )
   walletTransactionCredit: WalletTransactionCredit[];
   @OneToMany(
     () => WalletTransactionDebit,
     (walletTransactionDebit) => walletTransactionDebit.walletTransaction,
+    { cascade: true },
   )
   walletTransactionDebit: WalletTransactionDebit[];
   @OneToMany(
     () => WalletTransactionReason,
     (walletTransactionReason) => walletTransactionReason.walletTransaction,
+    { cascade: true },
   )
-  WalletTransactionReason: WalletTransactionReason[];
+  walletTransactionReason: WalletTransactionReason[];
 }

@@ -6,7 +6,6 @@ export function validateWalletTransaction(body: WalletTransactionDto): void {
   if (!debit && !credit) {
     throw new Error(MESSAGE.INVALID_CREDIT_DEBIT);
   }
-  console.log('credit' + credit + 'debit' + debit);
   if (
     (creditAmount === undefined || null) &&
     (debitAmount === undefined || null)

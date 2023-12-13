@@ -9,12 +9,15 @@ export class Wallet extends BaseEntity {
   balance: number;
   @Column('integer', { name: 'user_id', nullable: false })
   userId: number;
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user) => user.wallet, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
   @OneToMany(
     () => WalletTransaction,
     (walletTransaction) => walletTransaction.wallet,
+    { cascade: true },
   )
   walletTransaction: WalletTransaction[];
 }

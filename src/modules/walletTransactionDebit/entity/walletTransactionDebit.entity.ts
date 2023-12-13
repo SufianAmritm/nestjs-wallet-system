@@ -33,6 +33,7 @@ export class WalletTransactionDebit extends BaseEntity {
   @ManyToOne(
     () => WalletTransaction,
     (walletTransaction) => walletTransaction.walletTransactionDebit,
+    { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   walletTransaction: WalletTransaction;

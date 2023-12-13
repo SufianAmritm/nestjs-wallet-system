@@ -20,17 +20,34 @@ export class CountryRepository
     super(repository);
   }
 
-  async deleteCountry(id: number): Promise<DeleteResult> {
+  async deleteCountry(countryRelations: any): Promise<DeleteResult> {
     try {
-      return await this.repository.softDelete({ id: id });
+      return await this.repository.softRemove(countryRelations);
     } catch (error) {
       throw new Error(error.message);
     }
   }
   async findCountryRelationsAndSearch(
     pattern: CountrySearchDto,
-    city: boolean,
+    findAllRelations: boolean,
+    findCity: boolean,
   ): Promise<Country[] | City[]> {
+    const findOptionRelations = {
+      where: { id: pattern.id },
+      relations: ['city', 'city.user', 'city.user.wallet', 'city.user.coins'],
+    };
+    const findOptionCity = {
+      where: { id: pattern.id },
+      relations: {
+        city: true,
+      },
+    };
+    if (findAllRelations) {
+      return await this.repository.find(findOptionRelations);
+    }
+    if (findCity) {
+      return await this.repository.find(findOptionCity);
+    }
     const { id, name, currency, keyword } = pattern;
 
     if (id || name || currency) {
@@ -42,18 +59,10 @@ export class CountryRepository
         }
       }
 
-      const relationOption: Record<string, any> = {};
-
-      if (city === true) {
-        relationOption.city = true;
-      }
       const result: Country[] = await this.repository.find({
         where: whereOption,
-        relations: relationOption,
       });
-      if (city === true) {
-        return result.flatMap((item) => item.city);
-      } else return result;
+      return result;
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;

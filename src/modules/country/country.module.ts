@@ -11,6 +11,8 @@ import { Country } from './entity/country.entity';
 import { CountryRepository } from './repository/country.repository';
 import { ICountryRepository } from './interface/countryRepo.interface';
 import { ICountryService } from './interface/countryService.interface';
+import { City } from '../city/entity/city.entity';
+import { User } from '../user/entity/user.entity';
 const countryRepositoryProvider = [
   {
     provide: ICountryRepository,

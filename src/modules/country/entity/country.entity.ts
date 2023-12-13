@@ -14,6 +14,6 @@ export class Country extends BaseEntity {
     name: 'currency',
   })
   currency: string;
-  @OneToMany(() => City, (city) => city.country)
+  @OneToMany(() => City, (city) => city.country, { cascade: true })
   city: City[];
 }

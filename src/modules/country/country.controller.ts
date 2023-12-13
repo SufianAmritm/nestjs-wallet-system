@@ -36,21 +36,24 @@ export class CountryController {
     return await this.countryService.postCountry(body);
   }
   @Get('search')
-  async findCountryRelationsAndSearch(
-    @Query() query: {},
-  ): Promise<Country[] | City[] | void> {
+  async countrySearch(@Query() query: {}): Promise<Country[] | City[] | void> {
+    const findCity: boolean = false;
+    const findAllRelations: boolean = false;
     return await this.countryService.findCountryRelationsAndSearch(
       query,
-      false,
+      findAllRelations,
+      findCity,
     );
   }
-  @Get('cities')
-  async findCitiesByCountry(
-    @Query() query: {},
+  @Get('cities/:id')
+  async findCitiesByCountryId(
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<Country[] | City[] | void> {
     const findCity: boolean = true;
+    const findAllRelations: boolean = false;
     return await this.countryService.findCountryRelationsAndSearch(
-      query,
+      { id: id },
+      findAllRelations,
       findCity,
     );
   }

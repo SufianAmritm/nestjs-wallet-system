@@ -137,7 +137,7 @@ export class WalletTransactionService {
     validPattern<WalletTransactionSearchDto>(pattern, this.tableName);
 
     const result = await this.repository.findWalletRelationsAndSearch(pattern);
-    console.log(result);
+
     return validResult<WalletTransaction[]>(result, this.tableName);
   }
 }

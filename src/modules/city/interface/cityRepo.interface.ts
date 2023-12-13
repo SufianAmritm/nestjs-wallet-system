@@ -4,6 +4,10 @@ import { DeleteResult } from 'typeorm';
 import { CitySearchDto } from '../dto/citySearch.dto';
 export const ICityRepository = Symbol('ICityRepository');
 export interface ICityRepository extends BaseRepository<City> {
-  deleteCity(id: number): Promise<DeleteResult>;
-  findCityRelationsAndSearch(pattern: CitySearchDto): Promise<City[]>;
+  deleteCity(cityRelations: any): Promise<DeleteResult>;
+  findCityRelationsAndSearch(
+    pattern: CitySearchDto,
+    findAllRelations: boolean,
+    findUsers: boolean,
+  ): Promise<City[]>;
 }

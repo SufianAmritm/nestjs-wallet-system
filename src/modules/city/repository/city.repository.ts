@@ -18,7 +18,28 @@ export class CityRepository
   ) {
     super(repository);
   }
-  async findCityRelationsAndSearch(pattern: CitySearchDto): Promise<City[]> {
+  async findCityRelationsAndSearch(
+    pattern: CitySearchDto,
+    findAllRelations: boolean,
+    findUsers: boolean,
+  ): Promise<City[]> {
+    const findOptionRelations = {
+      where: { id: pattern.id },
+      relations: ['user', 'user.wallet', 'user.coins'],
+    };
+    const findOptionUser = {
+      where: { id: pattern.id },
+      relations: {
+        user: true,
+      },
+    };
+    if (findAllRelations) {
+      return await this.repository.find(findOptionRelations);
+    }
+    if (findUsers) {
+      return await this.repository.find(findOptionUser);
+    }
+
     const { id, name, countryId, keyword } = pattern;
 
     if (id || name || countryId) {
@@ -26,7 +47,6 @@ export class CityRepository
       if (id) whereOption.id = id;
       if (name) whereOption.name = name;
       if (countryId) whereOption.countryId = countryId;
-      console.log(whereOption);
 
       return await this.repository.find({
         where: whereOption,
@@ -34,7 +54,6 @@ export class CityRepository
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;
-    console.log(keyPattern);
     if (keyword) {
       return await this.repository
         .createQueryBuilder(alias)
@@ -55,9 +74,9 @@ export class CityRepository
         .getMany();
     }
   }
-  async deleteCity(id: number): Promise<DeleteResult> {
+  async deleteCity(cityRelations: any): Promise<DeleteResult> {
     try {
-      return await this.repository.softDelete({ id: id });
+      return await this.repository.softRemove(cityRelations);
     } catch (error) {
       throw new Error(error.message);
     }

@@ -8,11 +8,9 @@ export function creditInputValidation(
 
   for (const i in data) {
     if (data[i] === true) {
-      console.log(i);
       checkArray.push(i);
     }
   }
-  console.log(checkArray);
   if (checkArray.length > 1) {
     throw new Error('Only one credit can be true');
   }

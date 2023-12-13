@@ -9,6 +9,11 @@ import {
 } from 'class-validator';
 import { MESSAGE } from 'src/common/customMessages/index';
 export class UserUpdateDto {
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  @IsOptional()
+  id?: number;
   @IsString()
   @IsNotEmpty()
   @IsAlpha()
