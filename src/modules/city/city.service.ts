@@ -53,14 +53,25 @@ export class CityService implements ICityService {
     return await this.repository.updateByIdWithTransaction(id, data, City);
   }
   async deleteCity(id: number): Promise<DeleteResult> {
-    return await this.repository.deleteCity(id);
+    const cityRelations = await this.repository.findCityRelationsAndSearch(
+      { id: id },
+      true,
+      false,
+    );
+
+    return await this.repository.deleteCity(cityRelations);
   }
   async findCityRelationsAndSearch(
     pattern: CitySearchDto,
+    findAllRelations: boolean,
+    findUsers: boolean,
   ): Promise<City[] | void> {
     validPattern<CitySearchDto>(pattern, this.tableName);
-    const result = await this.repository.findCityRelationsAndSearch(pattern);
-    console.log(result);
+    const result = await this.repository.findCityRelationsAndSearch(
+      pattern,
+      findAllRelations,
+      findUsers,
+    );
     return validResult<City[]>(result, this.tableName);
   }
 }

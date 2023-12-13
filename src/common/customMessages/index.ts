@@ -12,4 +12,17 @@ export enum MESSAGE {
   DEBIT_INVALID = 'The transaction is not debit type. Recheck if it is credit or debit type.',
   INVALID_TRANSACTION = 'The transaction must have both or one of credit and debit amounts',
   INVALID_TRANSACTION_AMOUNT = 'The transaction must have matching amounts with its type for example credit:true-->creditAmount && !debitAmount',
+  USER_CSV_INVALID_IDS = 'No invalid ids. Data updated Successfully',
+  INVALID_FILE_SIZE = 'File size must be less than 100b',
+  INVALID_FILE = 'File is not valid. Provide all values',
+}
+
+export enum OPERATION {
+  ADD = 'add',
+  UPDATE = 'update',
+}
+export enum USER_CSV {
+  USERID = 'id',
+  USERNAME = 'name',
+  USERCITYID = 'cityId',
 }

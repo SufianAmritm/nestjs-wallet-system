@@ -17,6 +17,7 @@ export class CoinTransactionDebit extends BaseEntity {
   @ManyToOne(
     () => CoinTransaction,
     (coinTransaction) => coinTransaction.coinTransactionDebit,
+    { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'transaction_id', referencedColumnName: 'id' })
   coinTransaction: CoinTransaction;

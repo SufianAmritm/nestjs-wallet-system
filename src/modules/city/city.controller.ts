@@ -33,9 +33,26 @@ export class CityController {
     return await this.cityService.postCity(body);
   }
   @Get('search')
-  async findCityRelationsAndSearch(@Query() query: {}): Promise<City[] | void> {
-    return await this.cityService.findCityRelationsAndSearch(query);
+  async citySearch(@Query() query: {}): Promise<City[] | void> {
+    const findAllRelations: boolean = false;
+    const findUsers: boolean = false;
+    return await this.cityService.findCityRelationsAndSearch(
+      query,
+      findAllRelations,
+      findUsers,
+    );
   }
+  @Get('users/:id')
+  async findUsersByCityId(@Query() query: {}): Promise<City[] | void> {
+    const findAllRelations: boolean = false;
+    const findUsers: boolean = true;
+    return await this.cityService.findCityRelationsAndSearch(
+      query,
+      findAllRelations,
+      findUsers,
+    );
+  }
+
   @Get(':id')
   async findOneCity(
     @Param('id', ParseIntPipe) id: number,

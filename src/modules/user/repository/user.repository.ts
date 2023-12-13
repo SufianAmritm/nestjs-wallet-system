@@ -3,7 +3,7 @@ import { User } from '../entity/user.entity';
 import { BaseRepository } from 'src/common/database/rep/base.repository';
 import { IUserRepository } from '../interface/userRepo.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DeleteResult, Repository } from 'typeorm';
+import { Brackets, DeleteResult, In, Repository } from 'typeorm';
 
 import { UserSearchDto } from '../dto/userSearch.dto';
 
@@ -18,7 +18,50 @@ export class UserRepository
   ) {
     super(repository);
   }
-  async findUserRelationsAndSearch(pattern: UserSearchDto): Promise<User[]> {
+  async findUserRelationsAndSearch(
+    pattern: UserSearchDto,
+    findAllRelations: boolean,
+    findWallets: boolean,
+    findCoins: boolean,
+  ): Promise<User[]> {
+    const findOptionRelations = {
+      where: { id: pattern.id },
+      relations: [
+        'wallet',
+
+        'wallet.walletTransaction',
+        'wallet.walletTransaction.walletTransactionCredit',
+        'wallet.walletTransaction.walletTransactionDebit',
+        'wallet.walletTransaction.walletTransactionReason',
+        'coins',
+        'coins.coinTransaction',
+
+        'coins.coinTransaction.coinTransactionCredit',
+        'coins.coinTransaction.coinTransactionDebit',
+      ],
+    };
+    const findOptionWallet = {
+      where: { id: pattern.id },
+      relations: {
+        wallet: true,
+      },
+    };
+    const findOptionCoins = {
+      where: { id: pattern.id },
+      relations: {
+        coins: true,
+      },
+    };
+    if (findAllRelations) {
+      return await this.repository.find(findOptionRelations);
+    }
+    if (findWallets) {
+      return await this.repository.find(findOptionWallet);
+    }
+    if (findCoins) {
+      return await this.repository.find(findOptionCoins);
+    }
+
     const { id, name, cityId, keyword } = pattern;
 
     if (id || name || cityId) {
@@ -26,8 +69,6 @@ export class UserRepository
       if (id) whereOption.id = id;
       if (name) whereOption.name = name;
       if (cityId) whereOption.countryId = cityId;
-      console.log(whereOption);
-
       return await this.repository.find({
         where: whereOption,
       });
@@ -54,11 +95,17 @@ export class UserRepository
         .getMany();
     }
   }
-  async deleteUser(id: number): Promise<DeleteResult> {
+  async deleteUser(walletAndCoinRelations: any): Promise<DeleteResult> {
     try {
-      return await this.repository.softDelete({ id: id });
+      return await this.repository.softRemove(walletAndCoinRelations);
     } catch (error) {
       throw new Error(error);
     }
+  }
+  async checkValidIds(ids: Number[]) {
+    return await this.repository.find({
+      select: { id: true },
+      where: { id: In(ids) },
+    });
   }
 }

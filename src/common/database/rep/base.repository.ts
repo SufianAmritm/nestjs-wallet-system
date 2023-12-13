@@ -5,6 +5,7 @@ import {
   EntityTarget,
   FindOptionsWhere,
   QueryFailedError,
+  In,
 } from 'typeorm';
 
 import { MESSAGE } from 'src/common/customMessages';
@@ -35,6 +36,15 @@ export class BaseRepository<T> {
         throw new Error(error.message);
       });
   }
+  async postDataInBulk(data: T[]): Promise<T[]> {
+    return this.repository
+      .save(data)
+      .then((result: T[]) => result)
+      .catch(async (error) => {
+        await dbError(error);
+        throw new Error(error.message);
+      });
+  }
   async findById(whereOption: FindOptionsWhere<T>): Promise<T[]> {
     try {
       return await this.repository.find({ where: whereOption });
@@ -61,7 +71,7 @@ export class BaseRepository<T> {
       });
   }
 
-  async postDataWithTransaction(data: T): Promise<T> {
+  async postDataWithTransaction(data: any): Promise<T> {
     return await this.repository.manager.transaction(
       async (transactionManager: EntityManager) => {
         return await transactionManager

@@ -49,7 +49,6 @@ export class WalletTransactionRepository
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;
-    console.log(keyPattern);
     if (keyword) {
       return await this.repository
         .createQueryBuilder(alias)

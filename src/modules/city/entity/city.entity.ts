@@ -9,9 +9,11 @@ export class City extends BaseEntity {
   @Column('integer', { name: 'country_id', nullable: false })
   countryId: number;
 
-  @ManyToOne(() => Country, (country) => country.city)
+  @ManyToOne(() => Country, (country) => country.city, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'country_id', referencedColumnName: 'id' })
   country: Country;
-  @OneToMany(() => User, (user) => user.city)
+  @OneToMany(() => User, (user) => user.city, { cascade: true })
   user: User[];
 }

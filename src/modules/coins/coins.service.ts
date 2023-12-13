@@ -59,7 +59,6 @@ export class CoinsService {
       );
     }
     const result = await this.repository.findCoinsRelationsAndSearch(pattern);
-    console.log(result);
     return validResult<Coins[]>(result, this.repository.tableName);
   }
 }

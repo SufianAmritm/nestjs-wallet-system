@@ -28,15 +28,12 @@ export class WalletRepository
       if (id) whereOption.id = id;
       if (balance) whereOption.balance = balance;
       if (userId) whereOption.userId = userId;
-      console.log(whereOption);
-
       return await this.repository.find({
         where: whereOption,
       });
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;
-    console.log(keyPattern);
     if (keyword) {
       return await this.repository
         .createQueryBuilder(alias)

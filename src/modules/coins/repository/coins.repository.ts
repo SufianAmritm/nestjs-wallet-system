@@ -27,7 +27,6 @@ export class CoinsRepository
       if (id) whereOption.id = id;
       if (amount) whereOption.amount = amount;
       if (userId) whereOption.userId = userId;
-      console.log(whereOption);
 
       return await this.repository.find({
         where: whereOption,
@@ -35,7 +34,6 @@ export class CoinsRepository
     }
     const alias: string = this.tableName;
     const keyPattern = `%${keyword}%`;
-    console.log(keyPattern);
     if (keyword) {
       return await this.repository
         .createQueryBuilder(alias)

@@ -43,17 +43,21 @@ export class CoinTransaction extends BaseEntity {
   closingCoinsAmount: number;
   @Column('integer', { name: 'coins_id', nullable: false })
   coinsId: number;
-  @ManyToOne(() => Coins, (coins) => coins.coinTransaction)
+  @ManyToOne(() => Coins, (coins) => coins.coinTransaction, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'coins_id', referencedColumnName: 'id' })
   coins: Coins[];
   @OneToMany(
     () => CoinTransactionCredit,
     (coinTransactionCredit) => coinTransactionCredit.coinTransaction,
+    { cascade: true },
   )
   coinTransactionCredit: CoinTransactionCredit[];
   @OneToMany(
     () => CoinTransactionDebit,
     (coinTransactionDebit) => coinTransactionDebit.coinTransaction,
+    { cascade: true },
   )
   coinTransactionDebit: CoinTransactionDebit[];
 }
