@@ -14,10 +14,7 @@ import { validResult } from 'src/utils/valid/result.valid';
 import { validPattern } from 'src/utils/valid/pattern.valid';
 import { MESSAGE, OPERATION, USER_CSV } from 'src/common/customMessages';
 import * as csv from 'csv-parser';
-import { UserCsvDto } from './dto/usercsv.dto';
-import { UserCsvPostAndUpdateDto } from './dto/usercsvpostandupdate.dto';
-import { error } from 'console';
-import { json } from 'express';
+
 @Injectable()
 export class UserService {
   constructor(
