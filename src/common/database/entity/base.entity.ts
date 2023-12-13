@@ -3,6 +3,7 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({ schema: 'wallet' })
@@ -18,4 +19,6 @@ export class BaseEntity {
   createdAt: Date;
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: false })
   deletedAt: Date;
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  updatedAt: Date;
 }
